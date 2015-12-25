@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Imagemagick on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/imagemagick/</link>
+    <link>http://blog.paulopoiati.com/tags/imagemagick/</link>
     <description>Recent content in Imagemagick on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 28 Jan 2013 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/imagemagick/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/imagemagick/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew</title>
-      <link>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</link>
+      <link>http://blog.paulopoiati.com/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</link>
       <pubDate>Mon, 28 Jan 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</guid>
+      <guid>http://blog.paulopoiati.com/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</guid>
       <description>&lt;p&gt;Installing &lt;a href=&#34;https://github.com/rmagick/rmagic&#34;&gt;RMagick&lt;/a&gt; with homebrew should be
 trivial, but it&amp;rsquo;s not. For some reason the last version of RMagick
 &lt;code&gt;(2.13.1)&lt;/code&gt; does not compile with the last version of

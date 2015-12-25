@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Builder on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/builder/</link>
+    <link>http://blog.paulopoiati.com/tags/builder/</link>
     <description>Recent content in Builder on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 16 Feb 2012 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/builder/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/builder/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>jQuery Builder: Introduction</title>
-      <link>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</link>
+      <link>http://blog.paulopoiati.com/2012/02/16/jquery-builder-introduction/</link>
       <pubDate>Thu, 16 Feb 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</guid>
+      <guid>http://blog.paulopoiati.com/2012/02/16/jquery-builder-introduction/</guid>
       <description>
 
 &lt;h2 id=&#34;overview:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Overview&lt;/h2&gt;

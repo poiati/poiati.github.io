@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Email on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/email/</link>
+    <link>http://blog.paulopoiati.com/tags/email/</link>
     <description>Recent content in Email on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 31 Oct 2013 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/email/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/email/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Django Outbox Released</title>
-      <link>http://poiati.github.io/2013/10/31/django-outbox-released/</link>
+      <link>http://blog.paulopoiati.com/2013/10/31/django-outbox-released/</link>
       <pubDate>Thu, 31 Oct 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2013/10/31/django-outbox-released/</guid>
+      <guid>http://blog.paulopoiati.com/2013/10/31/django-outbox-released/</guid>
       <description>&lt;p&gt;I enjoy the development experience of the Django framework. But there is something I miss, a better way to evaluate and debug emails while coding.&lt;/p&gt;
 
 &lt;p&gt;What I am used to do is enable file based email backend, and see the emails directly on my file system. This is nice, but,

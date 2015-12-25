@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Eb on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/eb/</link>
+    <link>http://blog.paulopoiati.com/tags/eb/</link>
     <description>Recent content in Eb on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 25 Aug 2013 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/eb/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/eb/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Running Cron In Elastic Beanstalk Auto-Scaling Environment</title>
-      <link>http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</link>
+      <link>http://blog.paulopoiati.com/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</link>
       <pubDate>Sun, 25 Aug 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</guid>
+      <guid>http://blog.paulopoiati.com/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</guid>
       <description>&lt;p&gt;Who already worked with &lt;a target=&#34;_blank&#34; href=&#34;http://aws.amazon.com/elasticbeanstalk/&#34;&gt;Elastic Beanstalk&lt;/a&gt;
 knows the lack of documentation of the platform.
 If you need to deploy a simple application it&amp;rsquo;s straight forward, but

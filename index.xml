@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/</link>
+    <link>http://blog.paulopoiati.com/</link>
     <description>Recent content on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 01 Mar 2015 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>How do I Configure Environment Variables in Ansible</title>
-      <link>http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/</link>
+      <link>http://blog.paulopoiati.com/2015/03/01/how-do-i-configure-environment-variables-in-ansible/</link>
       <pubDate>Sun, 01 Mar 2015 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/</guid>
+      <guid>http://blog.paulopoiati.com/2015/03/01/how-do-i-configure-environment-variables-in-ansible/</guid>
       <description>&lt;p&gt;It&amp;rsquo;s common to use environment variables to configure applications, especially to store sensible information like passwords and keys (if you are familiar to Heroku you know what I mean). Here I will show how I do it using &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; and &lt;a href=&#34;http://supervisord.org/&#34;&gt;Supervisor&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;The solution is simple, in the same directory of your playbook create another named &lt;code&gt;private_vars&lt;/code&gt; (it can be named anything but I like this name because of the contrast with the &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; &lt;code&gt;group_vars&lt;/code&gt; convention). Don&amp;rsquo;t forget to put this directory in the ignore file of your CVS (you don&amp;rsquo;t want to share your passwords, right?).&lt;/p&gt;
@@ -64,10 +64,10 @@ app_environment: |
     
     <item>
       <title>Copying content from vim to Mac OS clipboard</title>
-      <link>http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</link>
+      <link>http://blog.paulopoiati.com/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</link>
       <pubDate>Tue, 27 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</guid>
+      <guid>http://blog.paulopoiati.com/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</guid>
       <description>&lt;p&gt;As a heavy user of vim and Mac OSX I very often need to copy something from vim to the OS clipboard.
 This can be easily accomplished with the mouse, but I hate to touch it.&lt;/p&gt;
 
@@ -107,10 +107,10 @@ Of course you can also go into visual mode, select some lines and press &lt;code
     
     <item>
       <title>Django Outbox Released</title>
-      <link>http://poiati.github.io/2013/10/31/django-outbox-released/</link>
+      <link>http://blog.paulopoiati.com/2013/10/31/django-outbox-released/</link>
       <pubDate>Thu, 31 Oct 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2013/10/31/django-outbox-released/</guid>
+      <guid>http://blog.paulopoiati.com/2013/10/31/django-outbox-released/</guid>
       <description>&lt;p&gt;I enjoy the development experience of the Django framework. But there is something I miss, a better way to evaluate and debug emails while coding.&lt;/p&gt;
 
 &lt;p&gt;What I am used to do is enable file based email backend, and see the emails directly on my file system. This is nice, but,
@@ -133,10 +133,10 @@ if I had a web interface this should be even better. That is the idea behind &lt
     
     <item>
       <title>Running Cron In Elastic Beanstalk Auto-Scaling Environment</title>
-      <link>http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</link>
+      <link>http://blog.paulopoiati.com/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</link>
       <pubDate>Sun, 25 Aug 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</guid>
+      <guid>http://blog.paulopoiati.com/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</guid>
       <description>&lt;p&gt;Who already worked with &lt;a target=&#34;_blank&#34; href=&#34;http://aws.amazon.com/elasticbeanstalk/&#34;&gt;Elastic Beanstalk&lt;/a&gt;
 knows the lack of documentation of the platform.
 If you need to deploy a simple application it&amp;rsquo;s straight forward, but
@@ -168,10 +168,10 @@ if one of the &lt;code&gt;container_commands&lt;/code&gt; fail.&lt;/p&gt;
     
     <item>
       <title>Flask flash messages testing</title>
-      <link>http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/</link>
+      <link>http://blog.paulopoiati.com/2013/02/22/testing-flash-messages-in-flask/</link>
       <pubDate>Fri, 22 Feb 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/</guid>
+      <guid>http://blog.paulopoiati.com/2013/02/22/testing-flash-messages-in-flask/</guid>
       <description>&lt;p&gt;Testing with &lt;a href=&#34;http://flask.pocoo.org/&#34;&gt;Flask&lt;/a&gt; is generally
 straightforward but some things aren&amp;rsquo;t
 trivial. The &lt;a href=&#34;http://pythonhosted.org/Flask-Testing/&#34;&gt;Flask-Testing&lt;/a&gt; extension helps us with some really useful
@@ -261,10 +261,10 @@ before running the tests.&lt;/p&gt;
     
     <item>
       <title>Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew</title>
-      <link>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</link>
+      <link>http://blog.paulopoiati.com/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</link>
       <pubDate>Mon, 28 Jan 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</guid>
+      <guid>http://blog.paulopoiati.com/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</guid>
       <description>&lt;p&gt;Installing &lt;a href=&#34;https://github.com/rmagick/rmagic&#34;&gt;RMagick&lt;/a&gt; with homebrew should be
 trivial, but it&amp;rsquo;s not. For some reason the last version of RMagick
 &lt;code&gt;(2.13.1)&lt;/code&gt; does not compile with the last version of
@@ -351,10 +351,10 @@ openmp and build it from source.&lt;/p&gt;
     
     <item>
       <title>Browsing between most recent buffers in VIM</title>
-      <link>http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/</link>
+      <link>http://blog.paulopoiati.com/2012/06/17/browsing-between-most-recent-buffers-in-vim/</link>
       <pubDate>Sun, 17 Jun 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/</guid>
+      <guid>http://blog.paulopoiati.com/2012/06/17/browsing-between-most-recent-buffers-in-vim/</guid>
       <description>&lt;p&gt;Vim has the concept of buffer, a buffer can be just an open file. For
 example, to list all the open buffers type &lt;code&gt;:ls&lt;/code&gt;.&lt;/p&gt;
 
@@ -384,10 +384,10 @@ nmap &amp;lt;Tab&amp;gt; :&lt;span style=&#34;color: #006699; font-weight: bold&
     
     <item>
       <title>A not well known and often over looked css property: box-sizing</title>
-      <link>http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</link>
+      <link>http://blog.paulopoiati.com/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</link>
       <pubDate>Sat, 12 May 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</guid>
+      <guid>http://blog.paulopoiati.com/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</guid>
       <description>&lt;p&gt;The &lt;code&gt;box-sizing&lt;/code&gt; (introduced in CSS3) is one of the forgotten properties, no one talks about it but can be really useful in some situations.&lt;/p&gt;
 
 &lt;p&gt;What it does? In the &lt;a href=&#34;https://developer.mozilla.org/En/CSS/Box-sizing&#34;&gt;Mozilla words&lt;/a&gt;:&lt;/p&gt;
@@ -448,10 +448,10 @@ nmap &amp;lt;Tab&amp;gt; :&lt;span style=&#34;color: #006699; font-weight: bold&
     
     <item>
       <title>jQuery Builder: Introduction</title>
-      <link>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</link>
+      <link>http://blog.paulopoiati.com/2012/02/16/jquery-builder-introduction/</link>
       <pubDate>Thu, 16 Feb 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</guid>
+      <guid>http://blog.paulopoiati.com/2012/02/16/jquery-builder-introduction/</guid>
       <description>
 
 &lt;h2 id=&#34;overview:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Overview&lt;/h2&gt;
@@ -600,10 +600,10 @@ $( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/spa
     
     <item>
       <title>Installing VimRepress in MacVim (OSX Lion)</title>
-      <link>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
+      <link>http://blog.paulopoiati.com/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
       <pubDate>Tue, 07 Feb 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
+      <guid>http://blog.paulopoiati.com/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
       <description>&lt;p&gt;Installing &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;VimRepress&lt;/a&gt; should be trivial for almost every case but one exception is installing it in MacOSX Lion. If you installed MacVim compiling the source without specifying the architecture it will use the x86_64 (default for Lion) even if you are using &lt;a target=&#39;_blank&#39; href=&#39;http://mxcl.github.com/homebrew/&#39;&gt;homebrew&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;The problem is, the python interpreter will not work correctly if you are using the 64 bits version, you need to recompile for the i386 architecture.&lt;/p&gt;
@@ -638,10 +638,10 @@ $( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/spa
     
     <item>
       <title>Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format</title>
-      <link>http://poiati.github.io/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
+      <link>http://blog.paulopoiati.com/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
       <pubDate>Sat, 31 Dec 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
+      <guid>http://blog.paulopoiati.com/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
       <description>
 
 &lt;p&gt;Generate hash in hexadecimal format is a common need for most developers. Generally this is an easy task, but like a lot of stuff it&amp;rsquo;s complicated to do in Java. You need to use the &lt;code&gt;java.security.MessageDigest&lt;/code&gt; API and convert the result from bytes to a hexadecimal string.&lt;/p&gt;
@@ -705,10 +705,10 @@ $( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/spa
     
     <item>
       <title>Grails / GORM: Changing default id name and type from an entity</title>
-      <link>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</link>
+      <link>http://blog.paulopoiati.com/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</link>
       <pubDate>Tue, 04 Oct 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</guid>
+      <guid>http://blog.paulopoiati.com/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</guid>
       <description>&lt;p&gt;While developing a simple application at work I got stuck with a common case in GORM, and I didn&amp;rsquo;t found the solution in the documentation.&lt;/p&gt;
 
 &lt;p&gt;I have a table with a column named &lt;code&gt;myid&lt;/code&gt; of type &lt;code&gt;varchar&lt;/code&gt;. But GORM by default auto generate an id property with the long
@@ -737,10 +737,10 @@ value (&lt;code&gt;myid&lt;/code&gt; in this case).&lt;/p&gt;
     
     <item>
       <title>Groovy / GMongo tips and tricks</title>
-      <link>http://poiati.github.io/2011/01/29/groovy-/-gmongo-tips-and-tricks/</link>
+      <link>http://blog.paulopoiati.com/2011/01/29/groovy-/-gmongo-tips-and-tricks/</link>
       <pubDate>Sat, 29 Jan 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2011/01/29/groovy-/-gmongo-tips-and-tricks/</guid>
+      <guid>http://blog.paulopoiati.com/2011/01/29/groovy-/-gmongo-tips-and-tricks/</guid>
       <description>
 
 &lt;p&gt;Based on some emails I received last days I will show some features of GMongo that not everyone is aware.&lt;/p&gt;
@@ -912,10 +912,10 @@ Person personFromMongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;
     
     <item>
       <title>GMongo available at Maven Central</title>
-      <link>http://poiati.github.io/2010/07/03/gmongo-available-at-maven-central/</link>
+      <link>http://blog.paulopoiati.com/2010/07/03/gmongo-available-at-maven-central/</link>
       <pubDate>Sat, 03 Jul 2010 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2010/07/03/gmongo-available-at-maven-central/</guid>
+      <guid>http://blog.paulopoiati.com/2010/07/03/gmongo-available-at-maven-central/</guid>
       <description>&lt;p&gt;A maintenance release (0.5.1) of &lt;a href=&#34;http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/&#34;&gt;GMongo&lt;/a&gt; was launched. It just fixed a bug with com.mongodb.DB#createCollection.&lt;/p&gt;
 
 &lt;p&gt;But the good news is the &lt;a href=&#34;http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/&#34;&gt;GMongo&lt;/a&gt; availability in the Maven Central (&lt;a href=&#34;http://repo2.maven.org/maven2/&#34;&gt;http://repo2.maven.org/maven2/&lt;/a&gt;).&lt;/p&gt;
@@ -959,10 +959,10 @@ db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;c
     
     <item>
       <title>GMongo 0.5 Released</title>
-      <link>http://poiati.github.io/2010/06/20/gmongo-0.5-released/</link>
+      <link>http://blog.paulopoiati.com/2010/06/20/gmongo-0.5-released/</link>
       <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2010/06/20/gmongo-0.5-released/</guid>
+      <guid>http://blog.paulopoiati.com/2010/06/20/gmongo-0.5-released/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt; GMongo is in constantly development, for more details check &lt;a href=&#39;https://github.com/poiati/gmongo&#39;&gt;&lt;a href=&#34;https://github.com/poiati/gmongo&#34;&gt;https://github.com/poiati/gmongo&lt;/a&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;

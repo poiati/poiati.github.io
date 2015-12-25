@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Grails on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/grails/</link>
+    <link>http://blog.paulopoiati.com/tags/grails/</link>
     <description>Recent content in Grails on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 04 Oct 2011 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/grails/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/grails/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Grails / GORM: Changing default id name and type from an entity</title>
-      <link>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</link>
+      <link>http://blog.paulopoiati.com/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</link>
       <pubDate>Tue, 04 Oct 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</guid>
+      <guid>http://blog.paulopoiati.com/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</guid>
       <description>&lt;p&gt;While developing a simple application at work I got stuck with a common case in GORM, and I didn&amp;rsquo;t found the solution in the documentation.&lt;/p&gt;
 
 &lt;p&gt;I have a table with a column named &lt;code&gt;myid&lt;/code&gt; of type &lt;code&gt;varchar&lt;/code&gt;. But GORM by default auto generate an id property with the long

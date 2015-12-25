@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Objective C on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/objective-c/</link>
+    <link>http://blog.paulopoiati.com/tags/objective-c/</link>
     <description>Recent content in Objective C on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 05 Dec 2009 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/objective-c/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/objective-c/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Forwarding Objective-C Messages</title>
-      <link>http://poiati.github.io/2009/12/05/forwarding-objective-c-messages/</link>
+      <link>http://blog.paulopoiati.com/2009/12/05/forwarding-objective-c-messages/</link>
       <pubDate>Sat, 05 Dec 2009 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2009/12/05/forwarding-objective-c-messages/</guid>
+      <guid>http://blog.paulopoiati.com/2009/12/05/forwarding-objective-c-messages/</guid>
       <description>&lt;p&gt;Unlike Java or plain C, Objective-C work with messages. You don&amp;rsquo;t invoke a method on an object, instead, you send a message to it (like the Ruby language). This approach let a more dynamic behavior. For instance, suppose that you have this class:&lt;/p&gt;
 
 &lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// SomeClass&lt;/span&gt;

@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Osx on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/osx/</link>
+    <link>http://blog.paulopoiati.com/tags/osx/</link>
     <description>Recent content in Osx on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 27 May 2014 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/osx/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/osx/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Copying content from vim to Mac OS clipboard</title>
-      <link>http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</link>
+      <link>http://blog.paulopoiati.com/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</link>
       <pubDate>Tue, 27 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</guid>
+      <guid>http://blog.paulopoiati.com/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</guid>
       <description>&lt;p&gt;As a heavy user of vim and Mac OSX I very often need to copy something from vim to the OS clipboard.
 This can be easily accomplished with the mouse, but I hate to touch it.&lt;/p&gt;
 
@@ -54,10 +54,10 @@ Of course you can also go into visual mode, select some lines and press &lt;code
     
     <item>
       <title>Installing VimRepress in MacVim (OSX Lion)</title>
-      <link>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
+      <link>http://blog.paulopoiati.com/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
       <pubDate>Tue, 07 Feb 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
+      <guid>http://blog.paulopoiati.com/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
       <description>&lt;p&gt;Installing &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;VimRepress&lt;/a&gt; should be trivial for almost every case but one exception is installing it in MacOSX Lion. If you installed MacVim compiling the source without specifying the architecture it will use the x86_64 (default for Lion) even if you are using &lt;a target=&#39;_blank&#39; href=&#39;http://mxcl.github.com/homebrew/&#39;&gt;homebrew&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;The problem is, the python interpreter will not work correctly if you are using the 64 bits version, you need to recompile for the i386 architecture.&lt;/p&gt;

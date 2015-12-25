@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Brew on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/brew/</link>
+    <link>http://blog.paulopoiati.com/tags/brew/</link>
     <description>Recent content in Brew on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 28 Jan 2013 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/brew/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/brew/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew</title>
-      <link>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</link>
+      <link>http://blog.paulopoiati.com/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</link>
       <pubDate>Mon, 28 Jan 2013 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</guid>
+      <guid>http://blog.paulopoiati.com/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</guid>
       <description>&lt;p&gt;Installing &lt;a href=&#34;https://github.com/rmagick/rmagic&#34;&gt;RMagick&lt;/a&gt; with homebrew should be
 trivial, but it&amp;rsquo;s not. For some reason the last version of RMagick
 &lt;code&gt;(2.13.1)&lt;/code&gt; does not compile with the last version of
@@ -101,10 +101,10 @@ openmp and build it from source.&lt;/p&gt;
     
     <item>
       <title>Installing VimRepress in MacVim (OSX Lion)</title>
-      <link>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
+      <link>http://blog.paulopoiati.com/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
       <pubDate>Tue, 07 Feb 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
+      <guid>http://blog.paulopoiati.com/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
       <description>&lt;p&gt;Installing &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;VimRepress&lt;/a&gt; should be trivial for almost every case but one exception is installing it in MacOSX Lion. If you installed MacVim compiling the source without specifying the architecture it will use the x86_64 (default for Lion) even if you are using &lt;a target=&#39;_blank&#39; href=&#39;http://mxcl.github.com/homebrew/&#39;&gt;homebrew&lt;/a&gt;.&lt;/p&gt;
 
 &lt;p&gt;The problem is, the python interpreter will not work correctly if you are using the 64 bits version, you need to recompile for the i386 architecture.&lt;/p&gt;

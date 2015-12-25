@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Html on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/html/</link>
+    <link>http://blog.paulopoiati.com/tags/html/</link>
     <description>Recent content in Html on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 12 May 2012 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/html/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/html/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>A not well known and often over looked css property: box-sizing</title>
-      <link>http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</link>
+      <link>http://blog.paulopoiati.com/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</link>
       <pubDate>Sat, 12 May 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</guid>
+      <guid>http://blog.paulopoiati.com/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</guid>
       <description>&lt;p&gt;The &lt;code&gt;box-sizing&lt;/code&gt; (introduced in CSS3) is one of the forgotten properties, no one talks about it but can be really useful in some situations.&lt;/p&gt;
 
 &lt;p&gt;What it does? In the &lt;a href=&#34;https://developer.mozilla.org/En/CSS/Box-sizing&#34;&gt;Mozilla words&lt;/a&gt;:&lt;/p&gt;
@@ -75,10 +75,10 @@
     
     <item>
       <title>jQuery Builder: Introduction</title>
-      <link>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</link>
+      <link>http://blog.paulopoiati.com/2012/02/16/jquery-builder-introduction/</link>
       <pubDate>Thu, 16 Feb 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</guid>
+      <guid>http://blog.paulopoiati.com/2012/02/16/jquery-builder-introduction/</guid>
       <description>
 
 &lt;h2 id=&#34;overview:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Overview&lt;/h2&gt;

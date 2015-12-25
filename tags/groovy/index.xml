@@ -2,19 +2,19 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Groovy on Paulo Poiati | Full Stack Web Developer</title>
-    <link>http://poiati.github.io/tags/groovy/</link>
+    <link>http://blog.paulopoiati.com/tags/groovy/</link>
     <description>Recent content in Groovy on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sat, 31 Dec 2011 00:00:00 +0000</lastBuildDate>
-    <atom:link href="http://poiati.github.io/tags/groovy/index.xml" rel="self" type="application/rss+xml" />
+    <atom:link href="http://blog.paulopoiati.com/tags/groovy/index.xml" rel="self" type="application/rss+xml" />
     
     <item>
       <title>Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format</title>
-      <link>http://poiati.github.io/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
+      <link>http://blog.paulopoiati.com/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
       <pubDate>Sat, 31 Dec 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
+      <guid>http://blog.paulopoiati.com/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
       <description>
 
 &lt;p&gt;Generate hash in hexadecimal format is a common need for most developers. Generally this is an easy task, but like a lot of stuff it&amp;rsquo;s complicated to do in Java. You need to use the &lt;code&gt;java.security.MessageDigest&lt;/code&gt; API and convert the result from bytes to a hexadecimal string.&lt;/p&gt;
@@ -78,10 +78,10 @@
     
     <item>
       <title>Grails / GORM: Changing default id name and type from an entity</title>
-      <link>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</link>
+      <link>http://blog.paulopoiati.com/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</link>
       <pubDate>Tue, 04 Oct 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</guid>
+      <guid>http://blog.paulopoiati.com/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</guid>
       <description>&lt;p&gt;While developing a simple application at work I got stuck with a common case in GORM, and I didn&amp;rsquo;t found the solution in the documentation.&lt;/p&gt;
 
 &lt;p&gt;I have a table with a column named &lt;code&gt;myid&lt;/code&gt; of type &lt;code&gt;varchar&lt;/code&gt;. But GORM by default auto generate an id property with the long
@@ -110,10 +110,10 @@ value (&lt;code&gt;myid&lt;/code&gt; in this case).&lt;/p&gt;
     
     <item>
       <title>Groovy / GMongo tips and tricks</title>
-      <link>http://poiati.github.io/2011/01/29/groovy-/-gmongo-tips-and-tricks/</link>
+      <link>http://blog.paulopoiati.com/2011/01/29/groovy-/-gmongo-tips-and-tricks/</link>
       <pubDate>Sat, 29 Jan 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2011/01/29/groovy-/-gmongo-tips-and-tricks/</guid>
+      <guid>http://blog.paulopoiati.com/2011/01/29/groovy-/-gmongo-tips-and-tricks/</guid>
       <description>
 
 &lt;p&gt;Based on some emails I received last days I will show some features of GMongo that not everyone is aware.&lt;/p&gt;
@@ -285,10 +285,10 @@ Person personFromMongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;
     
     <item>
       <title>GMongo available at Maven Central</title>
-      <link>http://poiati.github.io/2010/07/03/gmongo-available-at-maven-central/</link>
+      <link>http://blog.paulopoiati.com/2010/07/03/gmongo-available-at-maven-central/</link>
       <pubDate>Sat, 03 Jul 2010 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2010/07/03/gmongo-available-at-maven-central/</guid>
+      <guid>http://blog.paulopoiati.com/2010/07/03/gmongo-available-at-maven-central/</guid>
       <description>&lt;p&gt;A maintenance release (0.5.1) of &lt;a href=&#34;http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/&#34;&gt;GMongo&lt;/a&gt; was launched. It just fixed a bug with com.mongodb.DB#createCollection.&lt;/p&gt;
 
 &lt;p&gt;But the good news is the &lt;a href=&#34;http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/&#34;&gt;GMongo&lt;/a&gt; availability in the Maven Central (&lt;a href=&#34;http://repo2.maven.org/maven2/&#34;&gt;http://repo2.maven.org/maven2/&lt;/a&gt;).&lt;/p&gt;
@@ -332,10 +332,10 @@ db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;c
     
     <item>
       <title>GMongo 0.5 Released</title>
-      <link>http://poiati.github.io/2010/06/20/gmongo-0.5-released/</link>
+      <link>http://blog.paulopoiati.com/2010/06/20/gmongo-0.5-released/</link>
       <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
       
-      <guid>http://poiati.github.io/2010/06/20/gmongo-0.5-released/</guid>
+      <guid>http://blog.paulopoiati.com/2010/06/20/gmongo-0.5-released/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt; GMongo is in constantly development, for more details check &lt;a href=&#39;https://github.com/poiati/gmongo&#39;&gt;&lt;a href=&#34;https://github.com/poiati/gmongo&#34;&gt;https://github.com/poiati/gmongo&lt;/a&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
