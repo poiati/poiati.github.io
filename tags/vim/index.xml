@@ -11,10 +11,10 @@
     
     <item>
       <title>Copying content from vim to Mac OS clipboard</title>
-      <link>http://blog.paulopoiati.com/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</link>
+      <link>http://blog.paulopoiati.com/2014/05/27/vim-and-osx-clipboard/</link>
       <pubDate>Tue, 27 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</guid>
+      <guid>http://blog.paulopoiati.com/2014/05/27/vim-and-osx-clipboard/</guid>
       <description>&lt;p&gt;As a heavy user of vim and Mac OSX I very often need to copy something from vim to the OS clipboard.
 This can be easily accomplished with the mouse, but I hate to touch it.&lt;/p&gt;
 
@@ -54,10 +54,10 @@ Of course you can also go into visual mode, select some lines and press &lt;code
     
     <item>
       <title>Browsing between most recent buffers in VIM</title>
-      <link>http://blog.paulopoiati.com/2012/06/17/browsing-between-most-recent-buffers-in-vim/</link>
+      <link>http://blog.paulopoiati.com/2012/06/17/switching-between-the-last-used-buffers-in-vim/</link>
       <pubDate>Sun, 17 Jun 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2012/06/17/browsing-between-most-recent-buffers-in-vim/</guid>
+      <guid>http://blog.paulopoiati.com/2012/06/17/switching-between-the-last-used-buffers-in-vim/</guid>
       <description>&lt;p&gt;Vim has the concept of buffer, a buffer can be just an open file. For
 example, to list all the open buffers type &lt;code&gt;:ls&lt;/code&gt;.&lt;/p&gt;
 

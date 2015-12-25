@@ -11,10 +11,10 @@
     
     <item>
       <title>Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format</title>
-      <link>http://blog.paulopoiati.com/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
+      <link>http://blog.paulopoiati.com/2011/12/31/easyhash-an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
       <pubDate>Sat, 31 Dec 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
+      <guid>http://blog.paulopoiati.com/2011/12/31/easyhash-an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
       <description>
 
 &lt;p&gt;Generate hash in hexadecimal format is a common need for most developers. Generally this is an easy task, but like a lot of stuff it&amp;rsquo;s complicated to do in Java. You need to use the &lt;code&gt;java.security.MessageDigest&lt;/code&gt; API and convert the result from bytes to a hexadecimal string.&lt;/p&gt;

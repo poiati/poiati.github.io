@@ -7,7 +7,7 @@
 		<meta name="author" content="Paulo Poiati">
 		<meta name="description" content="">
 		<meta name="generator" content="Hugo 0.15" />
-		<title>Running Cron In Elastic Beanstalk Auto-Scaling Environment &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<title>Browsing between most recent buffers in VIM &middot; Paulo Poiati | Full Stack Web Developer</title>
 		<link rel="shortcut icon" href="http://blog.paulopoiati.com/images/favicon.ico">
 		<link rel="stylesheet" href="http://blog.paulopoiati.com/css/style.css">
 		<link rel="stylesheet" href="http://blog.paulopoiati.com/css/highlight.css">
@@ -36,36 +36,34 @@
         <section id="wrapper">
             <article class="post">
                 <header>
-                    <h1>Running Cron In Elastic Beanstalk Auto-Scaling Environment</h1>
-                    <h2 class="headline">August 25, 2013</h2>
+                    <h1>Browsing between most recent buffers in VIM</h1>
+                    <h2 class="headline">June 17, 2012</h2>
                 </header>
                 <section id="post-body">
-                    <p>Who already worked with <a target="_blank" href="http://aws.amazon.com/elasticbeanstalk/">Elastic Beanstalk</a>
-knows the lack of documentation of the platform.
-If you need to deploy a simple application it&rsquo;s straight forward, but
-if you need to do more complex stuff, it can be a pain in the ass.</p>
+                    <p>Vim has the concept of buffer, a buffer can be just an open file. For
+example, to list all the open buffers type <code>:ls</code>.</p>
 
-<p>The problem with Cron and Elastic Beanstalk begins when we are using Auto Scaling.
-Generally we need only one of our machines in the cluster to run the jobs, not all of them.
-We can use the <code>leader_only</code> option to ensure the job will just run in the leader of the cluster,
-but it&rsquo;s not enough, since the leader can change over time, for example, during deploys.
-To ensure all the machines crontab is wiped in every deploy we need to add
-another <code>container_command</code> (before the command to add the crontab).</p>
+<p>The intention here is not to explain buffers, there is a lot of good
+sources for that (ex: <a href="http://vim.wikia.com/wiki/Vim_buffer_FAQ">http://vim.wikia.com/wiki/Vim_buffer_FAQ</a>).</p>
 
-<p>Add this to your <a target="_blank" href="http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html">configuration file</a>.</p>
+<p>One of the Vim commands I use a lot is the <code>:b#</code> to switch back to the
+last used buffer (the one you were before the actual open). This can be
+very useful, for example, if you are working with the application code
+in one buffer and the correspondent unit test in the other one (another
+great way to work with two related files is using the <code>:split</code> and
+<code>:vsplit</code> commands).</p>
 
-<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">container_commands:
-  01_remove_old_cron_jobs:
-    command: <span style="color: #CC3300">&quot;crontab</span><span style="color: #003333"> </span><span style="color: #CC3300">-r</span><span style="color: #003333"> </span><span style="color: #CC3300">||</span><span style="color: #003333"> </span><span style="color: #CC3300">exit</span><span style="color: #003333"> </span><span style="color: #CC3300">0&quot;</span>
-  02_cronjobs:
-    command: <span style="color: #CC3300">&quot;cat</span><span style="color: #003333"> </span><span style="color: #CC3300">.ebextensions/crontab</span><span style="color: #003333"> </span><span style="color: #CC3300">|</span><span style="color: #003333"> </span><span style="color: #CC3300">crontab&quot;</span>
-    leader_only: true
+<p>But typing <code>:b#</code> and pressing the enter every time can be really annoying. Here is a simple key map to help with this:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">function</span> SwitchBuffer()
+  <span style="color: #006699; font-weight: bold">b</span>#
+<span style="color: #006699; font-weight: bold">endfunction</span>
+
+nmap &lt;Tab&gt; :<span style="color: #006699; font-weight: bold">call</span> SwitchBuffer()&lt;CR&gt;
 </pre></div>
 
 
-<p>The <code>|| exit 0</code> is mandatory because if there is no crontab in the machine the <code>crontab -r</code>
-command will return a status code &gt; 0 (an error). Elastic Beanstalk stop the deploy process
-if one of the <code>container_commands</code> fail.</p>
+<p>Put the code above in your <code>.vimrc</code> file. Now every time you press <code>Tab</code> in normal mode the buffer will switch.</p>
 
                 </section>
             </article>
@@ -78,7 +76,7 @@ if one of the <code>container_commands</code> fail.</p>
                         </div>
                     </a>
                 <section id="sharing">
-                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.paulopoiati.com%2f2013%2f08%2f25%2frunning-cron-in-elastic-beanstalk-auto-scaling-environment%2f - Running%20Cron%20In%20Elastic%20Beanstalk%20Auto-Scaling%20Environment by @poiati"><span class="icon-twitter"> Tweet</span></a>
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.paulopoiati.com%2f2012%2f06%2f17%2fswitching-between-the-last-used-buffers-in-vim%2f - Browsing%20between%20most%20recent%20buffers%20in%20VIM by @poiati"><span class="icon-twitter"> Tweet</span></a>
 
 <a class="facebook" href="#" onclick="
     window.open(
@@ -94,9 +92,9 @@ if one of the <code>container_commands</code> fail.</p>
             <div id="disqus_thread"></div>
 <script type="text/javascript">
     var disqus_shortname = 'poiati';
-    var disqus_identifier = 'http:\/\/blog.paulopoiati.com\/2013\/08\/25\/running-cron-in-elastic-beanstalk-auto-scaling-environment\/';
-    var disqus_title = 'Running Cron In Elastic Beanstalk Auto-Scaling Environment';
-    var disqus_url = 'http:\/\/blog.paulopoiati.com\/2013\/08\/25\/running-cron-in-elastic-beanstalk-auto-scaling-environment\/';
+    var disqus_identifier = 'http:\/\/blog.paulopoiati.com\/2012\/06\/17\/switching-between-the-last-used-buffers-in-vim\/';
+    var disqus_title = 'Browsing between most recent buffers in VIM';
+    var disqus_url = 'http:\/\/blog.paulopoiati.com\/2012\/06\/17\/switching-between-the-last-used-buffers-in-vim\/';
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

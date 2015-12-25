@@ -64,10 +64,10 @@ app_environment: |
     
     <item>
       <title>Copying content from vim to Mac OS clipboard</title>
-      <link>http://blog.paulopoiati.com/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</link>
+      <link>http://blog.paulopoiati.com/2014/05/27/vim-and-osx-clipboard/</link>
       <pubDate>Tue, 27 May 2014 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</guid>
+      <guid>http://blog.paulopoiati.com/2014/05/27/vim-and-osx-clipboard/</guid>
       <description>&lt;p&gt;As a heavy user of vim and Mac OSX I very often need to copy something from vim to the OS clipboard.
 This can be easily accomplished with the mouse, but I hate to touch it.&lt;/p&gt;
 
@@ -351,10 +351,10 @@ openmp and build it from source.&lt;/p&gt;
     
     <item>
       <title>Browsing between most recent buffers in VIM</title>
-      <link>http://blog.paulopoiati.com/2012/06/17/browsing-between-most-recent-buffers-in-vim/</link>
+      <link>http://blog.paulopoiati.com/2012/06/17/switching-between-the-last-used-buffers-in-vim/</link>
       <pubDate>Sun, 17 Jun 2012 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2012/06/17/browsing-between-most-recent-buffers-in-vim/</guid>
+      <guid>http://blog.paulopoiati.com/2012/06/17/switching-between-the-last-used-buffers-in-vim/</guid>
       <description>&lt;p&gt;Vim has the concept of buffer, a buffer can be just an open file. For
 example, to list all the open buffers type &lt;code&gt;:ls&lt;/code&gt;.&lt;/p&gt;
 
@@ -638,10 +638,10 @@ $( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/spa
     
     <item>
       <title>Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format</title>
-      <link>http://blog.paulopoiati.com/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
+      <link>http://blog.paulopoiati.com/2011/12/31/easyhash-an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
       <pubDate>Sat, 31 Dec 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
+      <guid>http://blog.paulopoiati.com/2011/12/31/easyhash-an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
       <description>
 
 &lt;p&gt;Generate hash in hexadecimal format is a common need for most developers. Generally this is an easy task, but like a lot of stuff it&amp;rsquo;s complicated to do in Java. You need to use the &lt;code&gt;java.security.MessageDigest&lt;/code&gt; API and convert the result from bytes to a hexadecimal string.&lt;/p&gt;
@@ -737,10 +737,10 @@ value (&lt;code&gt;myid&lt;/code&gt; in this case).&lt;/p&gt;
     
     <item>
       <title>Groovy / GMongo tips and tricks</title>
-      <link>http://blog.paulopoiati.com/2011/01/29/groovy-/-gmongo-tips-and-tricks/</link>
+      <link>http://blog.paulopoiati.com/2011/01/29/groovy-gmongo-tips-and-tricks/</link>
       <pubDate>Sat, 29 Jan 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2011/01/29/groovy-/-gmongo-tips-and-tricks/</guid>
+      <guid>http://blog.paulopoiati.com/2011/01/29/groovy-gmongo-tips-and-tricks/</guid>
       <description>
 
 &lt;p&gt;Based on some emails I received last days I will show some features of GMongo that not everyone is aware.&lt;/p&gt;
@@ -959,10 +959,10 @@ db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;c
     
     <item>
       <title>GMongo 0.5 Released</title>
-      <link>http://blog.paulopoiati.com/2010/06/20/gmongo-0.5-released/</link>
+      <link>http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/</link>
       <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2010/06/20/gmongo-0.5-released/</guid>
+      <guid>http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt; GMongo is in constantly development, for more details check &lt;a href=&#39;https://github.com/poiati/gmongo&#39;&gt;&lt;a href=&#34;https://github.com/poiati/gmongo&#34;&gt;https://github.com/poiati/gmongo&lt;/a&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;

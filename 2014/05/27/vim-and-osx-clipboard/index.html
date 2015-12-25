@@ -7,7 +7,7 @@
 		<meta name="author" content="Paulo Poiati">
 		<meta name="description" content="">
 		<meta name="generator" content="Hugo 0.15" />
-		<title>Running Cron In Elastic Beanstalk Auto-Scaling Environment &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<title>Copying content from vim to Mac OS clipboard &middot; Paulo Poiati | Full Stack Web Developer</title>
 		<link rel="shortcut icon" href="http://blog.paulopoiati.com/images/favicon.ico">
 		<link rel="stylesheet" href="http://blog.paulopoiati.com/css/style.css">
 		<link rel="stylesheet" href="http://blog.paulopoiati.com/css/highlight.css">
@@ -36,36 +36,44 @@
         <section id="wrapper">
             <article class="post">
                 <header>
-                    <h1>Running Cron In Elastic Beanstalk Auto-Scaling Environment</h1>
-                    <h2 class="headline">August 25, 2013</h2>
+                    <h1>Copying content from vim to Mac OS clipboard</h1>
+                    <h2 class="headline">May 27, 2014</h2>
                 </header>
                 <section id="post-body">
-                    <p>Who already worked with <a target="_blank" href="http://aws.amazon.com/elasticbeanstalk/">Elastic Beanstalk</a>
-knows the lack of documentation of the platform.
-If you need to deploy a simple application it&rsquo;s straight forward, but
-if you need to do more complex stuff, it can be a pain in the ass.</p>
+                    <p>As a heavy user of vim and Mac OSX I very often need to copy something from vim to the OS clipboard.
+This can be easily accomplished with the mouse, but I hate to touch it.</p>
 
-<p>The problem with Cron and Elastic Beanstalk begins when we are using Auto Scaling.
-Generally we need only one of our machines in the cluster to run the jobs, not all of them.
-We can use the <code>leader_only</code> option to ensure the job will just run in the leader of the cluster,
-but it&rsquo;s not enough, since the leader can change over time, for example, during deploys.
-To ensure all the machines crontab is wiped in every deploy we need to add
-another <code>container_command</code> (before the command to add the crontab).</p>
+<p>You can copy within the terminal using the <code>pbcopy</code> builtin command.
+That said we can write the following function:</p>
 
-<p>Add this to your <a target="_blank" href="http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html">configuration file</a>.</p>
-
-<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">container_commands:
-  01_remove_old_cron_jobs:
-    command: <span style="color: #CC3300">&quot;crontab</span><span style="color: #003333"> </span><span style="color: #CC3300">-r</span><span style="color: #003333"> </span><span style="color: #CC3300">||</span><span style="color: #003333"> </span><span style="color: #CC3300">exit</span><span style="color: #003333"> </span><span style="color: #CC3300">0&quot;</span>
-  02_cronjobs:
-    command: <span style="color: #CC3300">&quot;cat</span><span style="color: #003333"> </span><span style="color: #CC3300">.ebextensions/crontab</span><span style="color: #003333"> </span><span style="color: #CC3300">|</span><span style="color: #003333"> </span><span style="color: #CC3300">crontab&quot;</span>
-    leader_only: true
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">function</span>! CopyToOSClipboard() range
+  exec(<span style="color: #CC3300">&quot;:silent !cat %:p | sed -n &quot;</span> . <span style="color: #006699; font-weight: bold">a</span>:firstline . <span style="color: #CC3300">&quot;,&quot;</span> . <span style="color: #006699; font-weight: bold">a</span>:lastline . <span style="color: #CC3300">&quot;p | pbcopy&quot;</span>)
+  :<span style="color: #006699; font-weight: bold">redraw</span>!
+<span style="color: #006699; font-weight: bold">endfunction</span>
 </pre></div>
 
 
-<p>The <code>|| exit 0</code> is mandatory because if there is no crontab in the machine the <code>crontab -r</code>
-command will return a status code &gt; 0 (an error). Elastic Beanstalk stop the deploy process
-if one of the <code>container_commands</code> fail.</p>
+<p>A brief explanation of what is going on:</p>
+
+<ul>
+<li><code>silent</code> is used to not show the process output into the screen</li>
+<li>I&rsquo;m using <code>sed</code> to select between the lines of the range</li>
+<li>and finally I&rsquo;m feeding <code>pbcopy</code> with the <code>sed</code> output</li>
+</ul>
+
+<p>Now lets map it to <code>&lt;Leader&gt;&lt;Leader&gt;c</code> in normal and visual mode:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #336666">nnoremap</span> &lt;Leader&gt;&lt;Leader&gt;<span style="color: #006699; font-weight: bold">c</span> :<span style="color: #006699; font-weight: bold">call</span> CopyToOSClipboard()&lt;CR&gt;
+<span style="color: #336666">vnoremap</span> &lt;Leader&gt;&lt;Leader&gt;<span style="color: #006699; font-weight: bold">c</span> :<span style="color: #006699; font-weight: bold">call</span> CopyToOSClipboard()&lt;CR&gt;
+</pre></div>
+</p>
+
+<p>Now if you hit <code>&lt;Leader&gt;&lt;Leader&gt;c</code> the current cursor line will be copied to the clipboard.
+Of course you can also go into visual mode, select some lines and press <code>&lt;Leader&gt;&lt;Leader&gt;c</code> to copy more than one line.</p>
+
+<blockquote>
+<p><strong>IMPORTANT</strong> Because this function works in the file of the current vim buffer, not in the buffer memory the file needs to be saved.</p>
+</blockquote>
 
                 </section>
             </article>
@@ -78,7 +86,7 @@ if one of the <code>container_commands</code> fail.</p>
                         </div>
                     </a>
                 <section id="sharing">
-                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.paulopoiati.com%2f2013%2f08%2f25%2frunning-cron-in-elastic-beanstalk-auto-scaling-environment%2f - Running%20Cron%20In%20Elastic%20Beanstalk%20Auto-Scaling%20Environment by @poiati"><span class="icon-twitter"> Tweet</span></a>
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.paulopoiati.com%2f2014%2f05%2f27%2fvim-and-osx-clipboard%2f - Copying%20content%20from%20vim%20to%20Mac%20OS%20clipboard by @poiati"><span class="icon-twitter"> Tweet</span></a>
 
 <a class="facebook" href="#" onclick="
     window.open(
@@ -94,9 +102,9 @@ if one of the <code>container_commands</code> fail.</p>
             <div id="disqus_thread"></div>
 <script type="text/javascript">
     var disqus_shortname = 'poiati';
-    var disqus_identifier = 'http:\/\/blog.paulopoiati.com\/2013\/08\/25\/running-cron-in-elastic-beanstalk-auto-scaling-environment\/';
-    var disqus_title = 'Running Cron In Elastic Beanstalk Auto-Scaling Environment';
-    var disqus_url = 'http:\/\/blog.paulopoiati.com\/2013\/08\/25\/running-cron-in-elastic-beanstalk-auto-scaling-environment\/';
+    var disqus_identifier = 'http:\/\/blog.paulopoiati.com\/2014\/05\/27\/vim-and-osx-clipboard\/';
+    var disqus_title = 'Copying content from vim to Mac OS clipboard';
+    var disqus_url = 'http:\/\/blog.paulopoiati.com\/2014\/05\/27\/vim-and-osx-clipboard\/';
 
     (function() {
         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;

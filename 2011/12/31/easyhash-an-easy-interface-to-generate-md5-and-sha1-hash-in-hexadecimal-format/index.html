@@ -1,0 +1,248 @@
+    <!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Paulo Poiati">
+		<meta name="description" content="">
+		<meta name="generator" content="Hugo 0.15" />
+		<title>Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<link rel="shortcut icon" href="http://blog.paulopoiati.com/images/favicon.ico">
+		<link rel="stylesheet" href="http://blog.paulopoiati.com/css/style.css">
+		<link rel="stylesheet" href="http://blog.paulopoiati.com/css/highlight.css">
+		<link rel="stylesheet" href="http://blog.paulopoiati.com/css/monosocialiconsfont.css">
+		
+		<link href="http://blog.paulopoiati.com/index.xml" rel="alternate" type="application/rss+xml" title="Paulo Poiati | Full Stack Web Developer" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='http://blog.paulopoiati.com/'> <span class="arrow">←</span>Home</a>
+	
+
+	
+		<a href='http://blog.paulopoiati.com/about'>About</a>
+	
+
+	
+	<a class="cta" href="http://blog.paulopoiati.com/index.xml">Subscribe</a>
+	
+</nav>
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format</h1>
+                    <h2 class="headline">December 31, 2011</h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>Generate hash in hexadecimal format is a common need for most developers. Generally this is an easy task, but like a lot of stuff it&rsquo;s complicated to do in Java. You need to use the <code>java.security.MessageDigest</code> API and convert the result from bytes to a hexadecimal string.</p>
+
+<p>Unfortunately, even in Groovy there is no easy path. With that in mind I developed a small library to do the work.</p>
+
+<h3 id="using-java:ebdc5789e452dc25141f2eaff1d6cd14">Using Java</h3>
+
+<p>First, Put the easyhash jar into the classpath and then:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">static</span> com<span style="color: #555555">.</span><span style="color: #330099">lazythought</span><span style="color: #555555">.</span><span style="color: #330099">easyhash</span><span style="color: #555555">.</span><span style="color: #330099">HashGenerator</span><span style="color: #555555">.*;</span>
+
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #CC3300">&quot;ab07acbb1e496801937adfa772424bf7&quot;</span><span style="color: #555555">.</span><span style="color: #330099">equals</span><span style="color: #555555">(</span>md5<span style="color: #555555">(</span><span style="color: #CC3300">&quot;foo bar baz&quot;</span><span style="color: #555555">));</span>
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #CC3300">&quot;c7567e8b39e2428e38bf9c9226ac68de4c67dc39&quot;</span><span style="color: #555555">.</span><span style="color: #330099">equals</span><span style="color: #555555">(</span>sha1<span style="color: #555555">(</span><span style="color: #CC3300">&quot;foo bar baz&quot;</span><span style="color: #555555">));</span>
+</pre></div>
+
+
+<h3 id="using-groovy:ebdc5789e452dc25141f2eaff1d6cd14">Using Groovy</h3>
+
+<p>With Groovy you can use the @Grab AST:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// Grab the jar</span>
+<span style="color: #9999FF">@Grab</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;com.lazythought:easyhash:1.0&quot;</span><span style="color: #555555">)</span>
+
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">static</span> com<span style="color: #555555">.</span><span style="color: #330099">lazythought</span><span style="color: #555555">.</span><span style="color: #330099">easyhash</span><span style="color: #555555">.</span><span style="color: #330099">HashGenerator</span><span style="color: #555555">.*</span>
+
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #CC3300">&#39;ab07acbb1e496801937adfa772424bf7&#39;</span> <span style="color: #555555">==</span> md5<span style="color: #555555">(</span><span style="color: #CC3300">&#39;foo bar baz&#39;</span><span style="color: #555555">)</span>
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #CC3300">&#39;c7567e8b39e2428e38bf9c9226ac68de4c67dc39&#39;</span> <span style="color: #555555">==</span> sha1<span style="color: #555555">(</span><span style="color: #CC3300">&#39;foo bar baz&#39;</span><span style="color: #555555">)</span>
+</pre></div>
+</p>
+
+<p>There is also the HashCategory option:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// Grab the jar</span>
+<span style="color: #9999FF">@Grab</span><span style="color: #555555">(</span><span style="color: #CC3300">&#39;com.lazythought:easyhash:1.0&#39;</span><span style="color: #555555">)</span>
+
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">com.lazythought.easyhash.HashCategory</span>
+
+<span style="color: #CC00FF">use</span><span style="color: #555555">(</span>HashCategory<span style="color: #555555">)</span> <span style="color: #555555">{</span>
+    <span style="color: #006699; font-weight: bold">assert</span> <span style="color: #CC3300">&#39;b071ed8a2de56ecd5958305641a81755&#39;</span> <span style="color: #555555">==</span> <span style="color: #CC3300">&#39;frodo bags&#39;</span><span style="color: #555555">.</span><span style="color: #330099">md5</span><span style="color: #555555">()</span>
+    <span style="color: #006699; font-weight: bold">assert</span> <span style="color: #CC3300">&#39;b6b5ece040fd0c467cb189a284c6e7c752c747f5&#39;</span> <span style="color: #555555">==</span> <span style="color: #CC3300">&#39;frodo bags&#39;</span><span style="color: #555555">.</span><span style="color: #330099">sha1</span><span style="color: #555555">()</span>
+<span style="color: #555555">}</span>
+</pre></div>
+</p>
+
+<h3 id="dive-in:ebdc5789e452dc25141f2eaff1d6cd14">Dive in</h3>
+
+<p>It&rsquo;s Available at Maven Central.</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #330099; font-weight: bold">&lt;dependency&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;groupId&gt;</span>com.lazythought<span style="color: #330099; font-weight: bold">&lt;/groupId&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;artifactId&gt;</span>easyhash<span style="color: #330099; font-weight: bold">&lt;/artifactId&gt;</span>
+    <span style="color: #330099; font-weight: bold">&lt;version&gt;</span>1.0<span style="color: #330099; font-weight: bold">&lt;/version&gt;</span>
+<span style="color: #330099; font-weight: bold">&lt;/dependency&gt;</span>
+</pre></div>
+</p>
+
+<p>Source code <a href="https://github.com/poiati/easyhash" target="_blank"><a href="https://github.com/poiati/easyhash">https://github.com/poiati/easyhash</a></a>.</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/poiati">
+                        <img class="avatar" src="http://blog.paulopoiati.com/images/avatar.png">
+                        <div>
+                            <span class="dark">Paulo Poiati</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fblog.paulopoiati.com%2f2011%2f12%2f31%2feasyhash-an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format%2f - Easyhash%3a%20%20An%20easy%20interface%20to%20generate%20md5%20and%20sha1%20hash%20in%20hexadecimal%20format by @poiati"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'poiati';
+    var disqus_identifier = 'http:\/\/blog.paulopoiati.com\/2011\/12\/31\/easyhash-an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format\/';
+    var disqus_title = 'Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format';
+    var disqus_url = 'http:\/\/blog.paulopoiati.com\/2011\/12\/31\/easyhash-an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2015/03/01/how-do-i-configure-environment-variables-in-ansible/">How do I Configure Environment Variables in Ansible<aside class="dates">Mar 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2014/05/27/vim-and-osx-clipboard/">Copying content from vim to Mac OS clipboard<aside class="dates">May 27</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2013/10/31/django-outbox-released/">Django Outbox Released<aside class="dates">Oct 31</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/">Running Cron In Elastic Beanstalk Auto-Scaling Environment<aside class="dates">Aug 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2013/02/22/testing-flash-messages-in-flask/">Flask flash messages testing<aside class="dates">Feb 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/">Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew<aside class="dates">Jan 28</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2012/06/17/switching-between-the-last-used-buffers-in-vim/">Browsing between most recent buffers in VIM<aside class="dates">Jun 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/">A not well known and often over looked css property: box-sizing<aside class="dates">May 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2012/02/16/jquery-builder-introduction/">jQuery Builder: Introduction<aside class="dates">Feb 16</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://blog.paulopoiati.com/2012/02/07/installing-vimrepress-in-macvim-osx-lion/">Installing VimRepress in MacVim (OSX Lion)<aside class="dates">Feb 7</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        
+<div id="social">
+    
+    <a class="symbol" href="https://www.github.com/poiati">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/poiati">
+        twitterbird
+    </a>
+    
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2015 Paulo Poiati
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://blog.paulopoiati.com/js/main.js"></script>
+<script src="http://blog.paulopoiati.com/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+    </body>
+</html>

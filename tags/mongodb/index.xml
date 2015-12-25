@@ -11,10 +11,10 @@
     
     <item>
       <title>Groovy / GMongo tips and tricks</title>
-      <link>http://blog.paulopoiati.com/2011/01/29/groovy-/-gmongo-tips-and-tricks/</link>
+      <link>http://blog.paulopoiati.com/2011/01/29/groovy-gmongo-tips-and-tricks/</link>
       <pubDate>Sat, 29 Jan 2011 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2011/01/29/groovy-/-gmongo-tips-and-tricks/</guid>
+      <guid>http://blog.paulopoiati.com/2011/01/29/groovy-gmongo-tips-and-tricks/</guid>
       <description>
 
 &lt;p&gt;Based on some emails I received last days I will show some features of GMongo that not everyone is aware.&lt;/p&gt;
@@ -233,10 +233,10 @@ db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;c
     
     <item>
       <title>GMongo 0.5 Released</title>
-      <link>http://blog.paulopoiati.com/2010/06/20/gmongo-0.5-released/</link>
+      <link>http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/</link>
       <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
       
-      <guid>http://blog.paulopoiati.com/2010/06/20/gmongo-0.5-released/</guid>
+      <guid>http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/</guid>
       <description>&lt;blockquote&gt;
 &lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt; GMongo is in constantly development, for more details check &lt;a href=&#39;https://github.com/poiati/gmongo&#39;&gt;&lt;a href=&#34;https://github.com/poiati/gmongo&#34;&gt;https://github.com/poiati/gmongo&lt;/a&gt;&lt;/a&gt;.&lt;/p&gt;
 &lt;/blockquote&gt;
