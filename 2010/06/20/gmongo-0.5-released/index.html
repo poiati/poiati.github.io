@@ -1,0 +1,328 @@
+    <!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Paulo Poiati">
+		<meta name="description" content="">
+		<meta name="generator" content="Hugo 0.15" />
+		<title>GMongo 0.5 Released &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<link rel="shortcut icon" href="http://poiati.github.io/images/favicon.ico">
+		<link rel="stylesheet" href="http://poiati.github.io/css/style.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/highlight.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/monosocialiconsfont.css">
+		
+		<link href="http://poiati.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Paulo Poiati | Full Stack Web Developer" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='http://poiati.github.io/'> <span class="arrow">←</span>Home</a>
+	
+
+	
+		<a href='http://poiati.github.io/about'>About</a>
+	
+
+	
+	<a class="cta" href="http://poiati.github.io/index.xml">Subscribe</a>
+	
+</nav>
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>GMongo 0.5 Released</h1>
+                    <h2 class="headline">June 20, 2010</h2>
+                </header>
+                <section id="post-body">
+                    <blockquote>
+<p><strong>UPDATE</strong> GMongo is in constantly development, for more details check <a href='https://github.com/poiati/gmongo'><a href="https://github.com/poiati/gmongo">https://github.com/poiati/gmongo</a></a>.</p>
+</blockquote>
+
+<p>GMongo is an alternative to de default Java driver for <a href="http://www.mongodb.org/">Mongodb</a>. It&rsquo;s use an easy and less verbose syntax, the grammar is very close to the official mongo shell cliente (javascript).</p>
+
+<p>It&rsquo;s just a wrapper around the Java driver. So, every single method of the the official driver is available here too.</p>
+
+<p>The main class is the com.gmongo.GMongo. It has the same API of the com.mongodb.Mongo but it&rsquo;s not a subclass. Instead, the methods calls are delegated. Despite GMongo, all other classes are the same from the Java driver.</p>
+
+<p>To be more practical, here are some examples:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// To download GMongo on the fly and put it at classpath</span>
+<span style="color: #9999FF">@Grab</span><span style="color: #555555">(</span>group<span style="color: #555555">=</span><span style="color: #CC3300">&#39;com.gmongo&#39;</span><span style="color: #555555">,</span> module<span style="color: #555555">=</span><span style="color: #CC3300">&#39;gmongo&#39;</span><span style="color: #555555">,</span> version<span style="color: #555555">=</span><span style="color: #CC3300">&#39;1.0&#39;</span><span style="color: #555555">)</span>
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">com.gmongo.GMongo</span>
+<span style="color: #0099FF; font-style: italic">// Instantiate a com.gmongo.GMongo object instead of com.mongodb.Mongo</span>
+<span style="color: #0099FF; font-style: italic">// The same constructors and methods are available here</span>
+<span style="color: #007788; font-weight: bold">def</span> mongo <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> GMongo<span style="color: #555555">(</span><span style="color: #CC3300">&quot;127.0.0.1&quot;</span><span style="color: #555555">,</span> <span style="color: #FF6600">27017</span><span style="color: #555555">)</span>
+
+<span style="color: #0099FF; font-style: italic">// Get a db reference in the old fashion way</span>
+<span style="color: #007788; font-weight: bold">def</span> db <span style="color: #555555">=</span> mongo<span style="color: #555555">.</span><span style="color: #330099">getDB</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;gmongo&quot;</span><span style="color: #555555">)</span>
+
+<span style="color: #0099FF; font-style: italic">// Collections can be accessed as a db property (like the javascript API)</span>
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">.</span><span style="color: #330099">myCollection</span> <span style="color: #006699; font-weight: bold">instanceof</span> com<span style="color: #555555">.</span><span style="color: #330099">mongodb</span><span style="color: #555555">.</span><span style="color: #330099">DBCollection</span>
+<span style="color: #0099FF; font-style: italic">// They also can be accessed with array notation </span>
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">[</span><span style="color: #CC3300">&#39;my.collection&#39;</span><span style="color: #555555">]</span> <span style="color: #006699; font-weight: bold">instanceof</span> com<span style="color: #555555">.</span><span style="color: #330099">mongodb</span><span style="color: #555555">.</span><span style="color: #330099">DBCollection</span>
+
+<span style="color: #0099FF; font-style: italic">// Insert a document</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">insert</span><span style="color: #555555">([</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Groovy&#39;</span><span style="color: #555555">])</span>
+<span style="color: #0099FF; font-style: italic">// A less verbose way to do it</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">insert</span><span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Ruby&#39;</span><span style="color: #555555">)</span>
+<span style="color: #0099FF; font-style: italic">// Yet another way</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Python&#39;</span><span style="color: #555555">]</span>
+
+<span style="color: #0099FF; font-style: italic">// Insert a list of documents</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Javascript&#39;</span><span style="color: #555555">,</span> <span style="color: #9999FF">type:</span> <span style="color: #CC3300">&#39;prototyped&#39;</span><span style="color: #555555">],</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Ioke&#39;</span><span style="color: #555555">,</span> <span style="color: #9999FF">type:</span> <span style="color: #CC3300">&#39;prototyped&#39;</span><span style="color: #555555">]]</span>
+
+<span style="color: #007788; font-weight: bold">def</span> statics <span style="color: #555555">=</span> <span style="color: #555555">[</span><span style="color: #CC3300">&#39;Java&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;C&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;VB&#39;</span><span style="color: #555555">]</span>
+
+statics<span style="color: #555555">.</span><span style="color: #330099">each</span> <span style="color: #555555">{</span>
+	db<span style="color: #555555">.</span><span style="color: #330099">languages</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> it<span style="color: #555555">,</span> <span style="color: #9999FF">type:</span> <span style="color: #CC3300">&#39;static&#39;</span><span style="color: #555555">]</span>
+<span style="color: #555555">}</span>
+
+<span style="color: #0099FF; font-style: italic">// Finding the first document</span>
+<span style="color: #007788; font-weight: bold">def</span> lang <span style="color: #555555">=</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">findOne</span><span style="color: #555555">()</span>
+<span style="color: #006699; font-weight: bold">assert</span> lang<span style="color: #555555">.</span><span style="color: #330099">name</span> <span style="color: #555555">==</span> <span style="color: #CC3300">&#39;Groovy&#39;</span>
+<span style="color: #0099FF; font-style: italic">// Set a new property</span>
+lang<span style="color: #555555">.</span><span style="color: #330099">site</span> <span style="color: #555555">=</span> <span style="color: #CC3300">&#39;http://groovy.codehaus.org/&#39;</span>
+<span style="color: #0099FF; font-style: italic">// Save the new version</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">save</span> lang
+
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">findOne</span><span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Groovy&#39;</span><span style="color: #555555">).</span><span style="color: #330099">site</span> <span style="color: #555555">==</span> <span style="color: #CC3300">&#39;http://groovy.codehaus.org/&#39;</span>
+
+<span style="color: #0099FF; font-style: italic">// Counting the number of documents in the collection</span>
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">find</span><span style="color: #555555">(</span><span style="color: #9999FF">type:</span> <span style="color: #CC3300">&#39;static&#39;</span><span style="color: #555555">).</span><span style="color: #330099">count</span><span style="color: #555555">()</span> <span style="color: #555555">==</span> <span style="color: #FF6600">3</span>
+
+<span style="color: #0099FF; font-style: italic">// Another way to count</span>
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">count</span><span style="color: #555555">(</span><span style="color: #9999FF">type:</span> <span style="color: #CC3300">&#39;prototyped&#39;</span><span style="color: #555555">)</span> <span style="color: #555555">==</span> <span style="color: #FF6600">2</span>
+
+<span style="color: #0099FF; font-style: italic">// Updating a document using the &#39;$set&#39; operator</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">update</span><span style="color: #555555">([</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Python&#39;</span><span style="color: #555555">],</span> <span style="color: #555555">[</span>$set<span style="color: #555555">:</span> <span style="color: #555555">[</span><span style="color: #9999FF">paradigms:</span> <span style="color: #555555">[</span><span style="color: #CC3300">&#39;object-oriented&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;functional&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;imperative&#39;</span><span style="color: #555555">]]])</span>
+
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #FF6600">3</span> <span style="color: #555555">==</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">findOne</span><span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Python&#39;</span><span style="color: #555555">).</span><span style="color: #330099">paradigms</span><span style="color: #555555">.</span><span style="color: #330099">size</span><span style="color: #555555">()</span>
+
+<span style="color: #0099FF; font-style: italic">// Using upsert</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">update</span><span style="color: #555555">([</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Haskel&#39;</span><span style="color: #555555">],</span> <span style="color: #555555">[</span>$set<span style="color: #555555">:</span> <span style="color: #555555">[</span><span style="color: #9999FF">paradigms:</span> <span style="color: #555555">[</span><span style="color: #CC3300">&#39;functional&#39;</span><span style="color: #555555">]]],</span> <span style="color: #006699; font-weight: bold">true</span><span style="color: #555555">)</span>
+
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">findOne</span><span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Haskel&#39;</span><span style="color: #555555">)</span>
+
+<span style="color: #0099FF; font-style: italic">// Removing some documents</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">remove</span><span style="color: #555555">(</span><span style="color: #9999FF">type:</span> <span style="color: #CC3300">&#39;prototyped&#39;</span><span style="color: #555555">)</span>
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #FF6600">0</span> <span style="color: #555555">==</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">count</span><span style="color: #555555">(</span><span style="color: #9999FF">type:</span> <span style="color: #CC3300">&#39;prototyped&#39;</span><span style="color: #555555">)</span>
+
+<span style="color: #0099FF; font-style: italic">// Removing all documents</span>
+db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">remove</span><span style="color: #555555">([:])</span>
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #FF6600">0</span> <span style="color: #555555">==</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">count</span><span style="color: #555555">()</span>
+
+<span style="color: #0099FF; font-style: italic">// To ensure complete consistency in a session use DB#inRequest</span>
+<span style="color: #0099FF; font-style: italic">// It is analogous to user DB#requestStarted and DB#requestDone</span>
+db<span style="color: #555555">.</span><span style="color: #330099">inRequest</span> <span style="color: #555555">{</span>
+	db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">insert</span><span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Objective-C&#39;</span><span style="color: #555555">)</span>
+	<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #FF6600">1</span> <span style="color: #555555">==</span> db<span style="color: #555555">.</span><span style="color: #330099">languages</span><span style="color: #555555">.</span><span style="color: #330099">count</span><span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Objective-C&#39;</span><span style="color: #555555">)</span>
+<span style="color: #555555">}</span>
+</pre></div>
+
+
+<p>And a simple MapReduce:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// To download GMongo on the fly and put it at classpath</span>
+<span style="color: #9999FF">@Grab</span><span style="color: #555555">(</span>group<span style="color: #555555">=</span><span style="color: #CC3300">&#39;com.gmongo&#39;</span><span style="color: #555555">,</span> module<span style="color: #555555">=</span><span style="color: #CC3300">&#39;gmongo&#39;</span><span style="color: #555555">,</span> version<span style="color: #555555">=</span><span style="color: #CC3300">&#39;1.0&#39;</span><span style="color: #555555">)</span>
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">com.gmongo.GMongo</span>
+
+<span style="color: #0099FF; font-style: italic">// There is some bug using the [Random] word into codesnipt plugin</span>
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">java.util.Random</span> <span style="color: #006699; font-weight: bold">as</span> Rand
+
+<span style="color: #007788; font-weight: bold">def</span> mongo <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> GMongo<span style="color: #555555">(</span><span style="color: #CC3300">&quot;127.0.0.1&quot;</span><span style="color: #555555">,</span> <span style="color: #FF6600">27017</span><span style="color: #555555">)</span>
+<span style="color: #007788; font-weight: bold">def</span> db <span style="color: #555555">=</span> mongo<span style="color: #555555">.</span><span style="color: #330099">getDB</span><span style="color: #555555">(</span><span style="color: #CC3300">&quot;gmongo&quot;</span><span style="color: #555555">)</span>
+
+<span style="color: #007788; font-weight: bold">def</span> words <span style="color: #555555">=</span> <span style="color: #555555">[</span><span style="color: #CC3300">&#39;foo&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;bar&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;baz&#39;</span><span style="color: #555555">]</span>
+<span style="color: #007788; font-weight: bold">def</span> rand  <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Rand<span style="color: #555555">()</span>		
+
+<span style="color: #FF6600">1000</span><span style="color: #555555">.</span><span style="color: #330099">times</span> <span style="color: #555555">{</span> 
+	db<span style="color: #555555">.</span><span style="color: #330099">words</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">word:</span> words<span style="color: #555555">[</span>rand<span style="color: #555555">.</span><span style="color: #330099">nextInt</span><span style="color: #555555">(</span><span style="color: #FF6600">3</span><span style="color: #555555">)]]</span>
+<span style="color: #555555">}</span>
+
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">.</span><span style="color: #330099">words</span><span style="color: #555555">.</span><span style="color: #330099">count</span><span style="color: #555555">()</span> <span style="color: #555555">==</span> <span style="color: #FF6600">1000</span>
+
+<span style="color: #007788; font-weight: bold">def</span> result <span style="color: #555555">=</span> db<span style="color: #555555">.</span><span style="color: #330099">words</span><span style="color: #555555">.</span><span style="color: #330099">mapReduce</span><span style="color: #555555">(</span>
+	<span style="color: #CC3300">&quot;&quot;&quot;</span>
+<span style="color: #CC3300">	function map() {</span>
+<span style="color: #CC3300">		emit(this.word, {count: 1})</span>
+<span style="color: #CC3300">	}</span>
+<span style="color: #CC3300">	&quot;&quot;&quot;</span><span style="color: #555555">,</span>
+	<span style="color: #CC3300">&quot;&quot;&quot;</span>
+<span style="color: #CC3300">	function reduce(key, values) {</span>
+<span style="color: #CC3300">		var count = 0</span>
+<span style="color: #CC3300">		for (var i = 0; i &lt; values.length; i++)</span>
+<span style="color: #CC3300">			count += values[i].count</span>
+<span style="color: #CC3300">		return {count: count}</span>
+<span style="color: #CC3300">	}</span>
+<span style="color: #CC3300">	&quot;&quot;&quot;</span><span style="color: #555555">,</span>
+	<span style="color: #CC3300">&quot;mrresult&quot;</span><span style="color: #555555">,</span>
+	<span style="color: #555555">[:]</span> <span style="color: #0099FF; font-style: italic">// No Query</span>
+<span style="color: #555555">)</span>
+
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">.</span><span style="color: #330099">mrresult</span><span style="color: #555555">.</span><span style="color: #330099">count</span><span style="color: #555555">()</span> <span style="color: #555555">==</span> <span style="color: #FF6600">3</span>
+<span style="color: #006699; font-weight: bold">assert</span> db<span style="color: #555555">.</span><span style="color: #330099">mrresult</span><span style="color: #555555">.</span><span style="color: #330099">find</span><span style="color: #555555">()*.</span><span style="color: #330099">value</span><span style="color: #555555">*.</span><span style="color: #330099">count</span><span style="color: #555555">.</span><span style="color: #330099">sum</span><span style="color: #555555">()</span> <span style="color: #555555">==</span> <span style="color: #FF6600">1000</span>
+</pre></div>
+</p>
+
+<p>It&rsquo;s a stable version and still a work in progress. The only dependency is the mongo Java driver version 2.0 and, of course, Groovy. It&rsquo;s tested under Groovy 1.7.2 and 1.7.3. It&rsquo;s opensource and hosted at <a href="http://github.com/poiati/gmongo">http://github.com/poiati/gmongo</a>.</p>
+
+<blockquote>
+<p>The binaries can be found at <a href="http://repo1.maven.org/maven2/com/gmongo/gmongo/">Maven Central</a>.
+<a href="http://blog.paulopoiati.com/2010/07/03/gmongo-available-at-maven-central/">Click here for more details</a>.</p>
+</blockquote>
+
+<p>Any bug, suggestion or issue please contact me.</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/poiati">
+                        <img class="avatar" src="http://poiati.github.io/images/avatar.png">
+                        <div>
+                            <span class="dark">Paulo Poiati</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fpoiati.github.io%2f2010%2f06%2f20%2fgmongo-0.5-released%2f - GMongo%200.5%20Released by @poiati"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'poiati';
+    var disqus_identifier = 'http:\/\/poiati.github.io\/2010\/06\/20\/gmongo-0.5-released\/';
+    var disqus_title = 'GMongo 0.5 Released';
+    var disqus_url = 'http:\/\/poiati.github.io\/2010\/06\/20\/gmongo-0.5-released\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/">How do I Configure Environment Variables in Ansible<aside class="dates">Mar 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/">Copying content from vim to Mac OS clipboard<aside class="dates">May 27</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/10/31/django-outbox-released/">Django Outbox Released<aside class="dates">Oct 31</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/">Running Cron In Elastic Beanstalk Auto-Scaling Environment<aside class="dates">Aug 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/">Flask flash messages testing<aside class="dates">Feb 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/">Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew<aside class="dates">Jan 28</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/">Browsing between most recent buffers in VIM<aside class="dates">Jun 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/">A not well known and often over looked css property: box-sizing<aside class="dates">May 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/16/jquery-builder-introduction/">jQuery Builder: Introduction<aside class="dates">Feb 16</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/">Installing VimRepress in MacVim (OSX Lion)<aside class="dates">Feb 7</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        
+<div id="social">
+    
+    <a class="symbol" href="https://www.github.com/poiati">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/poiati">
+        twitterbird
+    </a>
+    
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2015 Paulo Poiati
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://poiati.github.io/js/main.js"></script>
+<script src="http://poiati.github.io/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+    </body>
+</html>

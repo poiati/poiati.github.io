@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Flask on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/flask/</link>
+    <description>Recent content in Flask on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 22 Feb 2013 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/flask/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Flask flash messages testing</title>
+      <link>http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/</link>
+      <pubDate>Fri, 22 Feb 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/</guid>
+      <description>&lt;p&gt;Testing with &lt;a href=&#34;http://flask.pocoo.org/&#34;&gt;Flask&lt;/a&gt; is generally
+straightforward but some things aren&amp;rsquo;t
+trivial. The &lt;a href=&#34;http://pythonhosted.org/Flask-Testing/&#34;&gt;Flask-Testing&lt;/a&gt; extension helps us with some really useful
+assertions like &lt;code&gt;TestCase#assert_context&lt;/code&gt; and
+&lt;code&gt;TestCase#assert_template_used&lt;/code&gt; but it miss a way to test flash messages.&lt;/p&gt;
+
+&lt;p&gt;One of the ways to test flashes is asserting if the message is in the
+response data.&lt;/p&gt;
+
+&lt;p&gt;Suppose the production code.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;@app.route&lt;/span&gt;(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;/post/&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;new_post&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; storage&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;create_post(request&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;form[&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;post&amp;#39;&lt;/span&gt;]):
+    flash(&lt;span style=&#34;color: #CC3300&#34;&gt;u&amp;#39;Post added&amp;#39;&lt;/span&gt;)
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; redirect(url_for(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;home&amp;#39;&lt;/span&gt;))
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; render_template(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;new-post.html&amp;#39;&lt;/span&gt;)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And the test code.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;should_flash_a_success_message&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  response &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;client&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;post(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;/post/&amp;#39;&lt;/span&gt;, data&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;valid_post_data,
+                              follow_redirects&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;)
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Post added&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #000000; font-weight: bold&#34;&gt;in&lt;/span&gt; response&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;data
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This works but personally I don&amp;rsquo;t like it. One reason is we need to
+follow the redirect and this can lead to testing the same thing twice
+because we should have a test for the &lt;code&gt;home&lt;/code&gt; route already.&lt;/p&gt;
+
+&lt;p&gt;The other reason is related to isolation. If we want to test the &lt;code&gt;view&lt;/code&gt; without
+rendering the template we can&amp;rsquo;t because we are making assertions in the
+generated document.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Curiosity: &lt;code&gt;Rails&lt;/code&gt; by default doesn&amp;rsquo;t render any view in
+controller specs. In &lt;code&gt;Flask-Testing&lt;/code&gt; it renders but you can
+&lt;a href=&#34;https://github.com/jarus/flask-testing/commit/382c9565f8c460d876d23ee0b8562e433d057240&#34;&gt;turn off template rendering&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Another way to test flash messages is using a &lt;code&gt;mock&lt;/code&gt;. You replace the
+&lt;code&gt;flash&lt;/code&gt; method with a &lt;code&gt;mock&lt;/code&gt; and use expectations to assert flash
+calls. This works but I like to avoid mocks when possible.&lt;/p&gt;
+
+&lt;p&gt;My solution consist in defining a new method to do the job. I recommend you to
+define it in a base test class so you can reuse it.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;flask.ext.testing&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; TestCase
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;myapp&lt;/span&gt;
+
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;BaseTest&lt;/span&gt;(TestCase):
+                                                                                
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;create_app&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+        &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; myapp&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;create_app(TESTING&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;)
+                                                                                                 
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;assert_flashes&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;, expected_message, expected_category&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;message&amp;#39;&lt;/span&gt;):
+        &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;client&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;session_transaction() &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;as&lt;/span&gt; session:
+            &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;try&lt;/span&gt;:
+                category, message &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; session[&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;_flashes&amp;#39;&lt;/span&gt;][&lt;span style=&#34;color: #FF6600&#34;&gt;0&lt;/span&gt;]
+            &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color: #CC0000; font-weight: bold&#34;&gt;KeyError&lt;/span&gt;:
+                &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color: #CC0000; font-weight: bold&#34;&gt;AssertionError&lt;/span&gt;(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;nothing flashed&amp;#39;&lt;/span&gt;)
+            &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; expected_message &lt;span style=&#34;color: #000000; font-weight: bold&#34;&gt;in&lt;/span&gt; message
+            &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; expected_category &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; category
+&lt;/pre&gt;&lt;/div&gt;
+
+And now my test looks like this.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;should_flash_a_success_message&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;client&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;post(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;/post/&amp;#39;&lt;/span&gt;, data&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;valid_post_data)
+
+  &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;assert_flashes(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Post added&amp;#39;&lt;/span&gt;)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Don&amp;rsquo;t forget to subclass BaseTest in your test classes. Another trick
+thing about flashes is that they need the session to work and sessions
+doesn&amp;rsquo;t work without the &lt;code&gt;SECRET_KEY&lt;/code&gt; set in Flask so be sure you set it
+before running the tests.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Javascript on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/javascript/</link>
+    <description>Recent content in Javascript on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 16 Feb 2012 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/javascript/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>jQuery Builder: Introduction</title>
+      <link>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</link>
+      <pubDate>Thu, 16 Feb 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</guid>
+      <description>
+
+&lt;h2 id=&#34;overview:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Overview&lt;/h2&gt;
+
+&lt;p&gt;Which web developer never built DOM elements programmatically? It’s a
+mess, doesn’t is?&lt;/p&gt;
+
+&lt;p&gt;Well, it was a lot worse in the past. When the only way to do that was appending strings or with the standard Document Api (&lt;code&gt;Document#createElement&lt;/code&gt;, &lt;code&gt;Document#appendChild&lt;/code&gt; &amp;hellip;). But In the past few years the things got better. Javascript Frameworks emerged and one of the them was the well know jQuery.&lt;/p&gt;
+
+&lt;p&gt;jQuery has a smarter API to build DOM elements. The main advantage of using jQuery is the &lt;a href=&#34;http://en.wikipedia.org/wiki/Method_chaining&#34;&gt;method chaining&lt;/a&gt;. But is out there a better approach ? I was seeking for one and I found just a few projects, one of them was &lt;a href=&#34;https://github.com/jeremyruppel/jquery.builder&#34;&gt;jquery.builder&lt;/a&gt; from Jeremy Ruppel, a new but promising project. One week later I was helping her to evolve it.&lt;/p&gt;
+
+&lt;h2 id=&#34;usage:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Usage&lt;/h2&gt;
+
+&lt;p&gt;To start building, use the &lt;code&gt;build&lt;/code&gt; method. You can give this build method a block.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.div( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;hello!&amp;#39;&lt;/span&gt; );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =  &amp;lt;div&amp;gt;hello!&amp;lt;/div&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;In this block and any child blocks, &lt;code&gt;this&lt;/code&gt; refers to the builder instance. The same builder instance will also be passed to the block if you want to name the reference.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( b )
+{
+  b.div( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;hello!&amp;#39;&lt;/span&gt; );
+} );
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The builder object has a method for every common html tag, but you can add your own tag methods easily (more on that later).&lt;/p&gt;
+
+&lt;p&gt;For building node hierarchies, you can give any tag method a block and the builder will adjust its scope appropriately:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.div( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+  {
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.div( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;nested&amp;#39;&lt;/span&gt; );
+  } );
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.span( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+  {
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.a( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;hierarchy&amp;#39;&lt;/span&gt; );
+  } );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =&amp;gt; &amp;lt;div&amp;gt;&amp;lt;div&amp;gt;nested&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;span&amp;gt;&amp;lt;a&amp;gt;hierarchy&amp;lt;/a&amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Scope can be nested as deeply as you want. Go crazy.&lt;/p&gt;
+
+&lt;p&gt;You can pass a hash of options to any tag method and those key-value pairs will be added as attributes to the created node.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.a( { href &lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;github.com&amp;#39;&lt;/span&gt; } );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =&amp;gt; &amp;lt;a href=&amp;quot;github.com&amp;quot;&amp;gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The options hash may also be passed after the node text, like:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.a( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;github rules&amp;#39;&lt;/span&gt;, { href &lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;github.com&amp;#39;&lt;/span&gt; } );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =&amp;gt; &amp;lt;a href=&amp;quot;github.com&amp;quot;&amp;gt;github rules&amp;lt;/a&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If you need the reference to the current scope DOM element you can use the $ variable. For Example, to add a mouse click event to an element:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.span(&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; ( )
+  {
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.text( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Click Me&amp;#39;&lt;/span&gt; );
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.$.click(&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+    {
+      alert( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Hello There!&amp;#39;&lt;/span&gt; );
+    } );
+  } );
+} );
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;h2 id=&#34;custom-tags:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Custom Tags&lt;/h2&gt;
+
+&lt;p&gt;If you&amp;rsquo;re building XML, you&amp;rsquo;re going to need some custom tags. &lt;strong&gt;jquery.builder&lt;/strong&gt; can be set up to build any tag that isn&amp;rsquo;t a reserved word. Just pass your tag name to the &lt;code&gt;build&lt;/code&gt; method and it will be available on any new builders.
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;custom&amp;#39;&lt;/span&gt; );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.custom( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;sweet&amp;#39;&lt;/span&gt; );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =&amp;gt; &amp;lt;custom&amp;gt;sweet&amp;lt;/custom&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If at any point you need to reset the tag list to the defaults, just pass &lt;em&gt;false&lt;/em&gt; to the &lt;code&gt;build&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;Right now, custom tags are shared between all builder instances regardless of their context node.&lt;/p&gt;
+
+&lt;h2 id=&#34;expressions-syntax:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Expressions Syntax&lt;/h2&gt;
+
+&lt;p&gt;Expressions is the easiest way to create nested elements. Using it you don&amp;rsquo;t need to specify a function to every nested object. You can also mix expressions style with the standard builder style.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;body div ul&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; ( )
+  {
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;li&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; ( )
+    {
+      &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.a( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; ( ) { &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.text( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Hello World&amp;#39;&lt;/span&gt; ); }, { &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;text&amp;#39;&lt;/span&gt; } );
+    } );
+  } );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// &amp;lt;body&amp;gt;&amp;lt;div&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;&amp;lt;a&amp;gt;Hello World&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If the tag name is omitted but a class or id is present it will infer a &lt;code&gt;div&lt;/code&gt; element, for example:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;.foo&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Hello, Foo!!!&amp;#39;&lt;/span&gt; );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// &amp;lt;div&amp;gt;Hello, Foo!!!&amp;lt;/div&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The source code and documentation is available: on the &lt;a href=&#34;https://github.com/jeremyruppel/jquery.builder&#34; target=&#34;_blank&#34;&gt;Github page&lt;/a&gt;. Any question or suggestion are welcome.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

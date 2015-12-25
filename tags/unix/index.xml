@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Unix on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/unix/</link>
+    <description>Recent content in Unix on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 17 Jun 2012 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/unix/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Browsing between most recent buffers in VIM</title>
+      <link>http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/</link>
+      <pubDate>Sun, 17 Jun 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/</guid>
+      <description>&lt;p&gt;Vim has the concept of buffer, a buffer can be just an open file. For
+example, to list all the open buffers type &lt;code&gt;:ls&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The intention here is not to explain buffers, there is a lot of good
+sources for that (ex: &lt;a href=&#34;http://vim.wikia.com/wiki/Vim_buffer_FAQ&#34;&gt;http://vim.wikia.com/wiki/Vim_buffer_FAQ&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;One of the Vim commands I use a lot is the &lt;code&gt;:b#&lt;/code&gt; to switch back to the
+last used buffer (the one you were before the actual open). This can be
+very useful, for example, if you are working with the application code
+in one buffer and the correspondent unit test in the other one (another
+great way to work with two related files is using the &lt;code&gt;:split&lt;/code&gt; and
+&lt;code&gt;:vsplit&lt;/code&gt; commands).&lt;/p&gt;
+
+&lt;p&gt;But typing &lt;code&gt;:b#&lt;/code&gt; and pressing the enter every time can be really annoying. Here is a simple key map to help with this:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; SwitchBuffer()
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;b&lt;/span&gt;#
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;endfunction&lt;/span&gt;
+
+nmap &amp;lt;Tab&amp;gt; :&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;call&lt;/span&gt; SwitchBuffer()&amp;lt;CR&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Put the code above in your &lt;code&gt;.vimrc&lt;/code&gt; file. Now every time you press &lt;code&gt;Tab&lt;/code&gt; in normal mode the buffer will switch.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

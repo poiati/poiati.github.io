@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Gorm on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/gorm/</link>
+    <description>Recent content in Gorm on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 04 Oct 2011 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/gorm/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Grails / GORM: Changing default id name and type from an entity</title>
+      <link>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</link>
+      <pubDate>Tue, 04 Oct 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</guid>
+      <description>&lt;p&gt;While developing a simple application at work I got stuck with a common case in GORM, and I didn&amp;rsquo;t found the solution in the documentation.&lt;/p&gt;
+
+&lt;p&gt;I have a table with a column named &lt;code&gt;myid&lt;/code&gt; of type &lt;code&gt;varchar&lt;/code&gt;. But GORM by default auto generate an id property with the long
+type. The solution is straight forward, just call the method id in the
+&lt;code&gt;mapping&lt;/code&gt; closure, with the following param(s):&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Foo&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+
+    String myid
+
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;static&lt;/span&gt; constraints &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{}&lt;/span&gt;
+    
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;static&lt;/span&gt; mapping &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+        id &lt;span style=&#34;color: #9999FF&#34;&gt;generator:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;assigned&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;myid&amp;#39;&lt;/span&gt;
+    &lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The generator is the strategy to auto-generate the id, you can use a
+sequence or something like, since it&amp;rsquo;s a string the value will be
+assigned, not generated. The name is the current property to bind the
+value (&lt;code&gt;myid&lt;/code&gt; in this case).&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

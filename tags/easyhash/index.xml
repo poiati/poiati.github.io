@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Easyhash on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/easyhash/</link>
+    <description>Recent content in Easyhash on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 31 Dec 2011 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/easyhash/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format</title>
+      <link>http://poiati.github.io/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
+      <pubDate>Sat, 31 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
+      <description>
+
+&lt;p&gt;Generate hash in hexadecimal format is a common need for most developers. Generally this is an easy task, but like a lot of stuff it&amp;rsquo;s complicated to do in Java. You need to use the &lt;code&gt;java.security.MessageDigest&lt;/code&gt; API and convert the result from bytes to a hexadecimal string.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, even in Groovy there is no easy path. With that in mind I developed a small library to do the work.&lt;/p&gt;
+
+&lt;h3 id=&#34;using-java:ebdc5789e452dc25141f2eaff1d6cd14&#34;&gt;Using Java&lt;/h3&gt;
+
+&lt;p&gt;First, Put the easyhash jar into the classpath and then:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;static&lt;/span&gt; com&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;lazythought&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;easyhash&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;HashGenerator&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.*;&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;ab07acbb1e496801937adfa772424bf7&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;equals&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;md5&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;foo bar baz&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;));&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;c7567e8b39e2428e38bf9c9226ac68de4c67dc39&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;equals&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;sha1&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;foo bar baz&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;));&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3 id=&#34;using-groovy:ebdc5789e452dc25141f2eaff1d6cd14&#34;&gt;Using Groovy&lt;/h3&gt;
+
+&lt;p&gt;With Groovy you can use the @Grab AST:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;com.lazythought:easyhash:1.0&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;static&lt;/span&gt; com&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;lazythought&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;easyhash&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;HashGenerator&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.*&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;ab07acbb1e496801937adfa772424bf7&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; md5&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;foo bar baz&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;c7567e8b39e2428e38bf9c9226ac68de4c67dc39&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; sha1&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;foo bar baz&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;There is also the HashCategory option:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.lazythought:easyhash:1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.lazythought.easyhash.HashCategory&lt;/span&gt;
+
+&lt;span style=&#34;color: #CC00FF&#34;&gt;use&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;HashCategory&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;b071ed8a2de56ecd5958305641a81755&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;frodo bags&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;md5&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;b6b5ece040fd0c467cb189a284c6e7c752c747f5&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;frodo bags&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;sha1&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;h3 id=&#34;dive-in:ebdc5789e452dc25141f2eaff1d6cd14&#34;&gt;Dive in&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s Available at Maven Central.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;com.lazythought&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;easyhash&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.0&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Source code &lt;a href=&#34;https://github.com/poiati/easyhash&#34; target=&#34;_blank&#34;&gt;&lt;a href=&#34;https://github.com/poiati/easyhash&#34;&gt;https://github.com/poiati/easyhash&lt;/a&gt;&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,356 @@
+    <!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Paulo Poiati">
+		<meta name="description" content="">
+		<meta name="generator" content="Hugo 0.15" />
+		<title>Groovy / GMongo tips and tricks &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<link rel="shortcut icon" href="http://poiati.github.io/images/favicon.ico">
+		<link rel="stylesheet" href="http://poiati.github.io/css/style.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/highlight.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/monosocialiconsfont.css">
+		
+		<link href="http://poiati.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Paulo Poiati | Full Stack Web Developer" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='http://poiati.github.io/'> <span class="arrow">←</span>Home</a>
+	
+
+	
+		<a href='http://poiati.github.io/about'>About</a>
+	
+
+	
+	<a class="cta" href="http://poiati.github.io/index.xml">Subscribe</a>
+	
+</nav>
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Groovy / GMongo tips and tricks</h1>
+                    <h2 class="headline">January 29, 2011</h2>
+                </header>
+                <section id="post-body">
+                    
+
+<p>Based on some emails I received last days I will show some features of GMongo that not everyone is aware.</p>
+
+<h2 id="regex-based-search:9779d8ac54173b508163e11ca261d1b7">Regex based search</h2>
+
+<p>In the mongo official Java driver you can do searches using Regular Expression. To do that you just need to pass a java.util.regex.Pattern instance as the search term. In Groovy there is a shortcut to create a Pattern: <code>~/regex/</code>.</p>
+
+<p>For example:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #007788; font-weight: bold">def</span> pattern <span style="color: #555555">=</span> <span style="color: #555555">~</span><span style="color: #CC3300">/mypattern/</span>
+<span style="color: #006699; font-weight: bold">assert</span> pattern<span style="color: #555555">.</span><span style="color: #330099">class</span><span style="color: #555555">.</span><span style="color: #330099">is</span><span style="color: #555555">(</span>java<span style="color: #555555">.</span><span style="color: #330099">util</span><span style="color: #555555">.</span><span style="color: #330099">regex</span><span style="color: #555555">.</span><span style="color: #330099">Pattern</span><span style="color: #555555">)</span>
+</pre></div>
+
+
+<p>Here is a small script demonstrating the usage of regex search:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// Grab the jar</span>
+<span style="color: #9999FF">@Grab</span><span style="color: #555555">(</span><span style="color: #CC3300">&#39;com.gmongo:gmongo:1.0&#39;</span><span style="color: #555555">)</span>
+
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">com.gmongo.GMongo</span>
+
+<span style="color: #007788; font-weight: bold">def</span> gmongo <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> GMongo<span style="color: #555555">(</span><span style="color: #CC3300">&#39;localhost:27017&#39;</span><span style="color: #555555">)</span>
+<span style="color: #007788; font-weight: bold">def</span> db <span style="color: #555555">=</span> gmongo<span style="color: #555555">.</span><span style="color: #330099">getDB</span><span style="color: #555555">(</span><span style="color: #CC3300">&#39;tips&#39;</span><span style="color: #555555">)</span>
+
+db<span style="color: #555555">.</span><span style="color: #330099">so</span><span style="color: #555555">.</span><span style="color: #330099">drop</span><span style="color: #555555">()</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Windows XP&#39;</span><span style="color: #555555">]</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Windows 7&#39;</span><span style="color: #555555">]</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Windows Vista&#39;</span><span style="color: #555555">]</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Mac OS X v10.3 &quot;Panther&quot;&#39;</span><span style="color: #555555">]</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Mac OS X v10.4 &quot;Tiger&quot;&#39;</span><span style="color: #555555">]</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Mac OS X v10.5 &quot;Leopard&quot;&#39;</span><span style="color: #555555">]</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Mac OS X v10.6 &quot;Snow Leopard&quot;&#39;</span><span style="color: #555555">]</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span> <span style="color: #555555">&lt;&lt;</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Mac OS X v10.7 &quot;Lion&quot;&#39;</span><span style="color: #555555">]</span>
+
+<span style="color: #0099FF; font-style: italic">// Mac OS Only</span>
+println <span style="color: #CC3300">&quot;\nMac Os Only\n&quot;</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span><span style="color: #555555">.</span><span style="color: #330099">find</span><span style="color: #555555">([</span><span style="color: #9999FF">name:</span> <span style="color: #555555">~</span><span style="color: #CC3300">/^Mac/</span><span style="color: #555555">]).</span><span style="color: #330099">each</span> <span style="color: #555555">{</span> so <span style="color: #555555">-&gt;</span>
+    println so
+<span style="color: #555555">}</span>
+
+<span style="color: #0099FF; font-style: italic">// Print: </span>
+
+<span style="color: #0099FF; font-style: italic">// Mac OS Leopard, Snow Leopard</span>
+println <span style="color: #CC3300">&quot;\nMac OS Leopard, Snow Leopard\n&quot;</span>
+db<span style="color: #555555">.</span><span style="color: #330099">so</span><span style="color: #555555">.</span><span style="color: #330099">find</span><span style="color: #555555">([</span><span style="color: #9999FF">name:</span> <span style="color: #555555">~</span><span style="color: #CC3300">/Leopard/</span><span style="color: #555555">]).</span><span style="color: #330099">each</span> <span style="color: #555555">{</span> so <span style="color: #555555">-&gt;</span>
+    println so
+<span style="color: #555555">}</span>
+</pre></div>
+
+
+<h2 id="persisting-your-pogo:9779d8ac54173b508163e11ca261d1b7">Persisting your POGO</h2>
+
+<p>There is an easy way to persist your POGO using GMongo. Suppose we have the class:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Person</span> <span style="color: #555555">{</span>
+   <span style="color: #007788; font-weight: bold">def</span> name
+   <span style="color: #007788; font-weight: bold">def</span> age
+<span style="color: #555555">}</span>
+</pre></div>
+</p>
+
+<p>In Groovy we can get all properties from a class using the <code>properties</code> property, for example:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #007788; font-weight: bold">def</span> person <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Person<span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Paulo&#39;</span><span style="color: #555555">,</span> <span style="color: #9999FF">age:</span> <span style="color: #FF6600">25</span><span style="color: #555555">)</span>
+println person<span style="color: #555555">.</span><span style="color: #330099">properties</span>
+</pre></div>
+</p>
+
+<p>This code outputs something like:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #555555">[</span>
+  <span style="color: #9999FF">class:</span><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Person</span><span style="color: #555555">,</span> 
+  <span style="color: #9999FF">age:</span><span style="color: #FF6600">25</span><span style="color: #555555">,</span> 
+  <span style="color: #9999FF">metaClass:</span>org<span style="color: #555555">.</span><span style="color: #330099">codehaus</span><span style="color: #555555">.</span><span style="color: #330099">groovy</span><span style="color: #555555">.</span><span style="color: #330099">runtime</span><span style="color: #555555">.</span><span style="color: #330099">HandleMetaClass</span><span style="color: #AA0000; background-color: #FFAAAA">@</span><span style="color: #FF6600">450</span>a1001<span style="color: #555555">,</span> 
+  <span style="color: #9999FF">name:</span>Paulo
+<span style="color: #555555">]</span>
+</pre></div>
+</p>
+
+<p>As you can see, not every property means something to us. We doesn&rsquo;t want to store <code>class</code> and <code>metaClass</code> in our storage, because it isn&rsquo;t part of the domain. So, we need to ignore them:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">println person<span style="color: #555555">.</span><span style="color: #330099">properties</span><span style="color: #555555">.</span><span style="color: #330099">findAll</span> <span style="color: #555555">{</span> <span style="color: #555555">![</span><span style="color: #CC3300">&#39;class&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;metaClass&#39;</span><span style="color: #555555">].</span><span style="color: #330099">contains</span><span style="color: #555555">(</span>it<span style="color: #555555">.</span><span style="color: #330099">key</span><span style="color: #555555">)</span> <span style="color: #555555">}</span>
+</pre></div>
+</p>
+
+<p>Now, all we need to do is persist this Map in MongoDB. Here is a complete example:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// Grab the jar</span>
+<span style="color: #9999FF">@Grab</span><span style="color: #555555">(</span><span style="color: #CC3300">&#39;com.gmongo:gmongo:1.0&#39;</span><span style="color: #555555">)</span>
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">com.gmongo.GMongo</span>
+
+<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Person</span> <span style="color: #555555">{</span>
+   <span style="color: #007788; font-weight: bold">def</span> name
+   <span style="color: #007788; font-weight: bold">def</span> age
+<span style="color: #555555">}</span>
+
+<span style="color: #007788; font-weight: bold">def</span> gmongo <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> GMongo<span style="color: #555555">(</span><span style="color: #CC3300">&#39;localhost:27017&#39;</span><span style="color: #555555">)</span>
+<span style="color: #007788; font-weight: bold">def</span> db <span style="color: #555555">=</span> gmongo<span style="color: #555555">.</span><span style="color: #330099">getDB</span><span style="color: #555555">(</span><span style="color: #CC3300">&#39;example&#39;</span><span style="color: #555555">)</span>
+
+<span style="color: #007788; font-weight: bold">def</span> person <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Person<span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Paulo&#39;</span><span style="color: #555555">,</span> <span style="color: #9999FF">age:</span> <span style="color: #FF6600">25</span><span style="color: #555555">)</span>
+
+db<span style="color: #555555">.</span><span style="color: #330099">persons</span><span style="color: #555555">.</span><span style="color: #330099">drop</span><span style="color: #555555">()</span>
+db<span style="color: #555555">.</span><span style="color: #330099">persons</span> <span style="color: #555555">&lt;&lt;</span> person<span style="color: #555555">.</span><span style="color: #330099">properties</span><span style="color: #555555">.</span><span style="color: #330099">findAll</span> <span style="color: #555555">{</span> <span style="color: #555555">![</span><span style="color: #CC3300">&#39;class&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;metaClass&#39;</span><span style="color: #555555">].</span><span style="color: #330099">contains</span><span style="color: #555555">(</span>it<span style="color: #555555">.</span><span style="color: #330099">key</span><span style="color: #555555">)</span> <span style="color: #555555">}</span>
+
+<span style="color: #007788; font-weight: bold">def</span> personFromMongo <span style="color: #555555">=</span> db<span style="color: #555555">.</span><span style="color: #330099">persons</span><span style="color: #555555">.</span><span style="color: #330099">findOne</span><span style="color: #555555">()</span>
+
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #CC3300">&#39;Paulo&#39;</span> <span style="color: #555555">==</span> personFromMongo<span style="color: #555555">.</span><span style="color: #330099">name</span>
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #FF6600">25</span>      <span style="color: #555555">==</span> personFromMongo<span style="color: #555555">.</span><span style="color: #330099">age</span>
+</pre></div>
+</p>
+
+<h2 id="basicdbobject-to-pogo-conversion:9779d8ac54173b508163e11ca261d1b7">BasicDBObject to POGO conversion</h2>
+
+<p>The class com.mongodb.BasicDBObjects extends java.util.LinkedHashMap so it&rsquo;s easy to convert it to POGO, thankfully to Groovy array notation constructor call. Don&rsquo;t worry, I will explain. Suppose we have the class:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Person</span> <span style="color: #555555">{</span>
+   <span style="color: #007788; font-weight: bold">def</span> name
+   <span style="color: #007788; font-weight: bold">def</span> age
+<span style="color: #555555">}</span>
+</pre></div>
+</p>
+
+<p>The two statements bellow are equivalent:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">Person mike <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Person<span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Mike&#39;</span><span style="color: #555555">,</span> <span style="color: #9999FF">age:</span> <span style="color: #FF6600">23</span><span style="color: #555555">)</span>
+Person john <span style="color: #555555">=</span> <span style="color: #555555">[</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;John&#39;</span><span style="color: #555555">,</span> <span style="color: #9999FF">age:</span> <span style="color: #FF6600">36</span><span style="color: #555555">]</span>
+</pre></div>
+</p>
+
+<blockquote>
+<p>To this work you need to use typed variable. If you use untyped variable definition Groovy can&rsquo;t infer what constructor to call.</p>
+</blockquote>
+
+<p>So, taking advantage of this cool Groovy feature you can do things like this:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// Grab the jar</span>
+<span style="color: #9999FF">@Grab</span><span style="color: #555555">(</span><span style="color: #CC3300">&#39;com.gmongo:gmongo:1.0&#39;</span><span style="color: #555555">)</span>
+<span style="color: #006699; font-weight: bold">import</span> <span style="color: #00CCFF; font-weight: bold">com.gmongo.GMongo</span>
+
+<span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Person</span> <span style="color: #555555">{</span>
+   <span style="color: #007788; font-weight: bold">def</span> name
+   <span style="color: #007788; font-weight: bold">def</span> age
+   
+   <span style="color: #007788; font-weight: bold">def</span> <span style="color: #CC00FF">whoIAm</span><span style="color: #555555">()</span> <span style="color: #555555">{</span>
+       <span style="color: #CC3300">&quot;Hello, I&#39;m $name and I am $age years old.&quot;</span>
+   <span style="color: #555555">}</span>
+<span style="color: #555555">}</span>
+
+<span style="color: #007788; font-weight: bold">def</span> gmongo <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> GMongo<span style="color: #555555">(</span><span style="color: #CC3300">&#39;localhost:27017&#39;</span><span style="color: #555555">)</span>
+<span style="color: #007788; font-weight: bold">def</span> db <span style="color: #555555">=</span> gmongo<span style="color: #555555">.</span><span style="color: #330099">getDB</span><span style="color: #555555">(</span><span style="color: #CC3300">&#39;example&#39;</span><span style="color: #555555">)</span>
+
+<span style="color: #007788; font-weight: bold">def</span> person <span style="color: #555555">=</span> <span style="color: #006699; font-weight: bold">new</span> Person<span style="color: #555555">(</span><span style="color: #9999FF">name:</span> <span style="color: #CC3300">&#39;Paulo&#39;</span><span style="color: #555555">,</span> <span style="color: #9999FF">age:</span> <span style="color: #FF6600">25</span><span style="color: #555555">)</span>
+
+db<span style="color: #555555">.</span><span style="color: #330099">persons</span><span style="color: #555555">.</span><span style="color: #330099">drop</span><span style="color: #555555">()</span>
+db<span style="color: #555555">.</span><span style="color: #330099">persons</span> <span style="color: #555555">&lt;&lt;</span> person<span style="color: #555555">.</span><span style="color: #330099">properties</span><span style="color: #555555">.</span><span style="color: #330099">findAll</span> <span style="color: #555555">{</span> <span style="color: #555555">![</span><span style="color: #CC3300">&#39;class&#39;</span><span style="color: #555555">,</span> <span style="color: #CC3300">&#39;metaClass&#39;</span><span style="color: #555555">].</span><span style="color: #330099">contains</span><span style="color: #555555">(</span>it<span style="color: #555555">.</span><span style="color: #330099">key</span><span style="color: #555555">)</span> <span style="color: #555555">}</span>
+
+Person personFromMongo <span style="color: #555555">=</span> db<span style="color: #555555">.</span><span style="color: #330099">persons</span><span style="color: #555555">.</span><span style="color: #330099">findOne</span><span style="color: #555555">().</span><span style="color: #330099">findAll</span> <span style="color: #555555">{</span> it<span style="color: #555555">.</span><span style="color: #330099">key</span> <span style="color: #555555">!=</span> <span style="color: #CC3300">&#39;_id&#39;</span> <span style="color: #555555">}</span>
+
+<span style="color: #006699; font-weight: bold">assert</span> <span style="color: #CC3300">&quot;Hello, I&#39;m Paulo and I am 25 years old.&quot;</span> <span style="color: #555555">==</span> personFromMongo<span style="color: #555555">.</span><span style="color: #330099">whoIAm</span><span style="color: #555555">()</span>
+</pre></div>
+</p>
+
+<p>As you can see, we need to remove the <code>_id</code> property from the Map before instantiate the class Person, that is because Person hasn&rsquo;t this property. Another alternative is add the <code>_id</code> property to the Person class.</p>
+
+<p>Any feedback is appreciated.</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/poiati">
+                        <img class="avatar" src="http://poiati.github.io/images/avatar.png">
+                        <div>
+                            <span class="dark">Paulo Poiati</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fpoiati.github.io%2f2011%2f01%2f29%2fgroovy-%2f-gmongo-tips-and-tricks%2f - Groovy%20%2f%20GMongo%20tips%20and%20tricks by @poiati"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'poiati';
+    var disqus_identifier = 'http:\/\/poiati.github.io\/2011\/01\/29\/groovy-\/-gmongo-tips-and-tricks\/';
+    var disqus_title = 'Groovy \/ GMongo tips and tricks';
+    var disqus_url = 'http:\/\/poiati.github.io\/2011\/01\/29\/groovy-\/-gmongo-tips-and-tricks\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/">How do I Configure Environment Variables in Ansible<aside class="dates">Mar 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/">Copying content from vim to Mac OS clipboard<aside class="dates">May 27</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/10/31/django-outbox-released/">Django Outbox Released<aside class="dates">Oct 31</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/">Running Cron In Elastic Beanstalk Auto-Scaling Environment<aside class="dates">Aug 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/">Flask flash messages testing<aside class="dates">Feb 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/">Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew<aside class="dates">Jan 28</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/">Browsing between most recent buffers in VIM<aside class="dates">Jun 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/">A not well known and often over looked css property: box-sizing<aside class="dates">May 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/16/jquery-builder-introduction/">jQuery Builder: Introduction<aside class="dates">Feb 16</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/">Installing VimRepress in MacVim (OSX Lion)<aside class="dates">Feb 7</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        
+<div id="social">
+    
+    <a class="symbol" href="https://www.github.com/poiati">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/poiati">
+        twitterbird
+    </a>
+    
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2015 Paulo Poiati
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://poiati.github.io/js/main.js"></script>
+<script src="http://poiati.github.io/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+    </body>
+</html>

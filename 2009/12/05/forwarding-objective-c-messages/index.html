@@ -1,0 +1,365 @@
+    <!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Paulo Poiati">
+		<meta name="description" content="">
+		<meta name="generator" content="Hugo 0.15" />
+		<title>Forwarding Objective-C Messages &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<link rel="shortcut icon" href="http://poiati.github.io/images/favicon.ico">
+		<link rel="stylesheet" href="http://poiati.github.io/css/style.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/highlight.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/monosocialiconsfont.css">
+		
+		<link href="http://poiati.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Paulo Poiati | Full Stack Web Developer" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='http://poiati.github.io/'> <span class="arrow">←</span>Home</a>
+	
+
+	
+		<a href='http://poiati.github.io/about'>About</a>
+	
+
+	
+	<a class="cta" href="http://poiati.github.io/index.xml">Subscribe</a>
+	
+</nav>
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Forwarding Objective-C Messages</h1>
+                    <h2 class="headline">December 5, 2009</h2>
+                </header>
+                <section id="post-body">
+                    <p>Unlike Java or plain C, Objective-C work with messages. You don&rsquo;t invoke a method on an object, instead, you send a message to it (like the Ruby language). This approach let a more dynamic behavior. For instance, suppose that you have this class:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// SomeClass</span>
+<span style="color: #009999">#import &lt;Cocoa/Cocoa.h&gt;</span>
+
+<span style="color: #006699; font-weight: bold">@interface</span> <span style="color: #00AA88; font-weight: bold">SomeClass</span> : <span style="color: #336666">NSObject</span> {
+}
+
+-(<span style="color: #007788; font-weight: bold">void</span>)<span style="color: #CC00FF">doSomething</span>
+<span style="color: #006699; font-weight: bold">@end</span>
+
+<span style="color: #009999">#import &quot;SomeClass.h&quot;</span>
+<span style="color: #009999">#import &quot;Delegate.h&quot;</span>
+
+<span style="color: #006699; font-weight: bold">@implementation</span> <span style="color: #00AA88; font-weight: bold">SomeClass</span>
+
+-(<span style="color: #007788; font-weight: bold">void</span>)<span style="color: #CC00FF">doSomething</span> {
+   NSLog(<span style="color: #CC3300">@&quot;doSomething was called on %@&quot;</span>, [<span style="color: #336666">self</span> className]);
+}
+
+<span style="color: #006699; font-weight: bold">@end</span>
+</pre></div>
+
+
+<p>As you can see it has only one instance method definition, called
+<code>doSomething</code>. Thus, it can respond to the <code>doSomething</code> message. But, what happens when we send a message that the <code>receiver</code> can&rsquo;t respond to ? Lets make a try:</p>
+
+<blockquote>
+<p>The <code>receiver</code> is the object that will receive the message. For example, in the statement: <code>[dog bark]</code> <code>dog</code> is the receiver and <code>bark</code> is the message.</p>
+</blockquote>
+
+<p>Here is our main code:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// MethodMissing</span>
+<span style="color: #009999">#import &lt;Foundation/Foundation.h&gt;</span>
+<span style="color: #009999">#import &quot;SomeClass.h&quot;</span>
+
+<span style="color: #007788; font-weight: bold">int</span> <span style="color: #CC00FF">main</span> (<span style="color: #007788; font-weight: bold">int</span> argc, <span style="color: #006699; font-weight: bold">const</span> <span style="color: #007788; font-weight: bold">char</span> <span style="color: #555555">*</span> argv[]) {
+  <span style="color: #336666">NSAutoreleasePool</span> <span style="color: #555555">*</span>pool <span style="color: #555555">=</span> [<span style="color: #336666">NSAutoreleasePool</span> new];
+  SomeClass <span style="color: #555555">*</span>someClass <span style="color: #555555">=</span> [SomeClass new];
+  [someClass doSomething];
+  [someClass doSomethingElse];
+  [pool drain];
+  <span style="color: #006699; font-weight: bold">return</span> <span style="color: #FF6600">0</span>;
+}
+</pre></div>
+
+
+<p>This code compiles with warnings, because the message &ldquo;doSomethingElse&rdquo; is not defined in the SomeClass interface. Errors in the Objective-C message dispatch system occurs at runtime. Programmers need to be more careful when dealing with more dynamic languages.</p>
+
+<p>Running the code we got the following result:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">MethodMissing[1695:a0f] doSomething was called on SomeClass
+MethodMissing[1695:a0f] -[SomeClass doSomethingElse]: unrecognized selector sent to instance 0x10010c6c0
+MethodMissing[1695:a0f] *** Terminating app due to uncaught exception &#39;NSInvalidArgumentException&#39;,
+reason: &#39;-[SomeClass doSomethingElse]: unrecognized selector sent to instance 0x10010c6c0&#39;
+</pre></div>
+
+
+<p>Not surprisingly the program crashed. First it invoke our declared
+<code>doSomething</code> message and logged the message to the console, all ok
+until now. But in line eight we got a NSInvalidArgumentException with
+the error <code>-[SomeClass doSomethingElse]: unrecognized selector sent to instance 0x10010c6c0</code>.</p>
+
+<p>This error message is very readable, the problem is that, there isn&rsquo;t any message that respond to <code>doSomethingElse</code> in class <code>SomeClass</code>.</p>
+
+<p>And we got to the key topic of this post. We can handle unrecognized selectors messages and do a special treatment when it arrive to the receiver. How we do that ?</p>
+
+<p>We need to overwrite two methods from the NSObject class in the <code>receiver</code> class:
+    <code>-(void)forwardInvocation:(NSInvocation *)invocation</code>
+    <code>-(NSMethodSignature*)methodSignatureForSelector:(SEL)selector</code></p>
+
+<blockquote>
+<p>An <code>NSInvocation</code> is an Objective-C message rendered static, that is, it is an action turned into an object. <code>NSInvocation</code> objects are used to store and forward messages between objects and between applications.</p>
+</blockquote>
+
+<p>Now our classes looks like this:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// ForwardClass</span>
+<span style="color: #009999">#import &lt;Cocoa/Cocoa.h&gt;</span>
+
+<span style="color: #006699; font-weight: bold">@interface</span> <span style="color: #00AA88; font-weight: bold">ForwardClass</span> : <span style="color: #336666">NSObject</span> {
+}
+
+-(<span style="color: #007788; font-weight: bold">void</span>)<span style="color: #CC00FF">doSomethingElse</span>;
+
+<span style="color: #006699; font-weight: bold">@end</span>
+
+<span style="color: #009999">#import &quot;ForwardClass.h&quot;</span>
+
+<span style="color: #006699; font-weight: bold">@implementation</span> <span style="color: #00AA88; font-weight: bold">ForwardClass</span>	
+
+-(<span style="color: #007788; font-weight: bold">void</span>)<span style="color: #CC00FF">doSomethingElse</span> {
+	NSLog(<span style="color: #CC3300">@&quot;doSomething was called on %@&quot;</span>, [<span style="color: #336666">self</span> className]);
+}
+
+<span style="color: #006699; font-weight: bold">@end</span>
+</pre></div>
+</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic">// SomeClass</span>
+
+<span style="color: #009999">#import &lt;Cocoa/Cocoa.h&gt;</span>
+
+<span style="color: #006699; font-weight: bold">@interface</span> <span style="color: #00AA88; font-weight: bold">SomeClass</span> : <span style="color: #336666">NSObject</span> {
+	<span style="color: #007788; font-weight: bold">id</span> forwardClass;
+}
+
+-(<span style="color: #007788; font-weight: bold">void</span>)<span style="color: #CC00FF">doSomething</span>;
+
+<span style="color: #006699; font-weight: bold">@end</span>
+
+<span style="color: #009999">#import &quot;SomeClass.h&quot;</span>
+<span style="color: #009999">#import &quot;ForwardClass.h&quot;</span>
+
+<span style="color: #006699; font-weight: bold">@implementation</span> <span style="color: #00AA88; font-weight: bold">SomeClass</span>
+
+-(<span style="color: #007788; font-weight: bold">id</span>)<span style="color: #CC00FF">init</span> {
+	<span style="color: #006699; font-weight: bold">if</span> (<span style="color: #336666">self</span> <span style="color: #555555">=</span> [<span style="color: #336666">super</span> init]) {
+		forwardClass <span style="color: #555555">=</span> [ForwardClass new];
+	}
+	<span style="color: #006699; font-weight: bold">return</span> <span style="color: #336666">self</span>;
+}
+
+-(<span style="color: #007788; font-weight: bold">void</span>)<span style="color: #CC00FF">doSomething</span> {
+	NSLog(<span style="color: #CC3300">@&quot;doSomething was called on %@&quot;</span>, [<span style="color: #336666">self</span> className]);
+}
+
+-(<span style="color: #007788; font-weight: bold">void</span>)<span style="color: #CC00FF">forwardInvocation:</span>(<span style="color: #336666">NSInvocation</span> <span style="color: #555555">*</span>)<span style="color: #003333">invocation</span> {
+	<span style="color: #006699; font-weight: bold">if</span> (<span style="color: #555555">!</span> forwardClass) {
+		[<span style="color: #336666">self</span> <span style="color: #9999FF">doesNotRecognizeSelector</span>: [invocation selector]];
+	}
+	[invocation <span style="color: #9999FF">invokeWithTarget</span>: forwardClass];
+}
+
+-(<span style="color: #336666">NSMethodSignature</span><span style="color: #555555">*</span>)<span style="color: #CC00FF">methodSignatureForSelector:</span>(<span style="color: #007788; font-weight: bold">SEL</span>)<span style="color: #003333">selector</span> {
+	<span style="color: #336666">NSMethodSignature</span> <span style="color: #555555">*</span>signature <span style="color: #555555">=</span> [<span style="color: #336666">super</span> <span style="color: #9999FF">methodSignatureForSelector</span>:selector];
+	<span style="color: #006699; font-weight: bold">if</span> (<span style="color: #555555">!</span> signature) {
+		signature <span style="color: #555555">=</span> [forwardClass <span style="color: #9999FF">methodSignatureForSelector</span>:selector];
+	}
+	<span style="color: #006699; font-weight: bold">return</span> signature;
+}
+
+<span style="color: #006699; font-weight: bold">@end</span>
+</pre></div>
+</p>
+
+<p>When an object receive a message it doesn&rsquo;t recognize, it wraps the invocation in a NSInvocation object and call the <code>-(void)forwardInvocation</code> passing it as parameter. But, first, it call the <code>-(NSMethodSignature*)methodSignatureForSelector</code> to get the method signature for the given selector.</p>
+
+<p>Now, running the same program again we got:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">MethodMissing[523:a0f] doSomething was called on SomeClass
+MethodMissing[523:a0f] doSomethingElse was called on ForwardClass
+</pre></div>
+</p>
+
+<p>And the program finished without any problems.</p>
+
+<p>There are a lot of uses for this technic, some examples are:</p>
+
+<ul>
+<li><p>Wrap one object in a logger object that intercepts and records the invocation of interesting messages.</p></li>
+
+<li><p>Implement <em>synthetic</em> messages that are handled by other methods in
+your class. Imagine creating a generic database record object that
+catches any property message it receives (i.e., <code>-saleDate</code>,
+<code>-setSaleDate:</code>) and automatically translates it into a record query.
+Instead of coding <code>date = [record getDateFieldWithKey:@&quot;SaleDate&quot;]</code>, you
+could simply write <code>date = [record saleDate]</code>, without ever writing a
+<code>-saleDate</code> method. <code>NSManagedObject</code> and <code>CALayer</code> are examples of classes that implement synthetic properties.</p></li>
+
+<li><p>Create an object that forwards the message to a hierarchy of other objects, like a responder chain. The proxy object would search a collection of other objects looking for one that implements the message</p></li>
+</ul>
+
+<p>In a future post I will demonstrate one real world application of this.</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/poiati">
+                        <img class="avatar" src="http://poiati.github.io/images/avatar.png">
+                        <div>
+                            <span class="dark">Paulo Poiati</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fpoiati.github.io%2f2009%2f12%2f05%2fforwarding-objective-c-messages%2f - Forwarding%20Objective-C%20Messages by @poiati"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'poiati';
+    var disqus_identifier = 'http:\/\/poiati.github.io\/2009\/12\/05\/forwarding-objective-c-messages\/';
+    var disqus_title = 'Forwarding Objective-C Messages';
+    var disqus_url = 'http:\/\/poiati.github.io\/2009\/12\/05\/forwarding-objective-c-messages\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/">How do I Configure Environment Variables in Ansible<aside class="dates">Mar 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/">Copying content from vim to Mac OS clipboard<aside class="dates">May 27</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/10/31/django-outbox-released/">Django Outbox Released<aside class="dates">Oct 31</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/">Running Cron In Elastic Beanstalk Auto-Scaling Environment<aside class="dates">Aug 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/">Flask flash messages testing<aside class="dates">Feb 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/">Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew<aside class="dates">Jan 28</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/">Browsing between most recent buffers in VIM<aside class="dates">Jun 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/">A not well known and often over looked css property: box-sizing<aside class="dates">May 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/16/jquery-builder-introduction/">jQuery Builder: Introduction<aside class="dates">Feb 16</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/">Installing VimRepress in MacVim (OSX Lion)<aside class="dates">Feb 7</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        
+<div id="social">
+    
+    <a class="symbol" href="https://www.github.com/poiati">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/poiati">
+        twitterbird
+    </a>
+    
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2015 Paulo Poiati
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://poiati.github.io/js/main.js"></script>
+<script src="http://poiati.github.io/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+    </body>
+</html>

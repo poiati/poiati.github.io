@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Email on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/email/</link>
+    <description>Recent content in Email on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 31 Oct 2013 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/email/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Django Outbox Released</title>
+      <link>http://poiati.github.io/2013/10/31/django-outbox-released/</link>
+      <pubDate>Thu, 31 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2013/10/31/django-outbox-released/</guid>
+      <description>&lt;p&gt;I enjoy the development experience of the Django framework. But there is something I miss, a better way to evaluate and debug emails while coding.&lt;/p&gt;
+
+&lt;p&gt;What I am used to do is enable file based email backend, and see the emails directly on my file system. This is nice, but,
+if I had a web interface this should be even better. That is the idea behind &lt;a href=&#34;https://github.com/poiati/django-outbox&#34;&gt;django-outbox&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can also preview html emails.&lt;/p&gt;
+
+&lt;div style=&#34;text-align: center;&#34;&gt;
+  &lt;a href=&#34;https://s3.amazonaws.com/poiati/django-outbox.png&#34; target=&#34;_blank&#34;&gt;
+    &lt;img src=&#39;https://s3.amazonaws.com/poiati/django-outbox.png&#39; alt=&#39;Django Outbox&#39; style=&#39;width: 40%;&#39;/&gt;
+  &lt;/a&gt;
+  &lt;a href=&#34;https://s3.amazonaws.com/poiati/django-outbox-mail.png&#34;&gt;
+    &lt;img src=&#39;https://s3.amazonaws.com/poiati/django-outbox-mail.png&#39; alt=&#39;Django Outbox&#39; style=&#39;width: 40%;&#39;/&gt;
+  &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The configuration is simple, just follow the instructions in the &lt;a href=&#34;https://github.com/poiati/django-outbox&#34;&gt;README&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

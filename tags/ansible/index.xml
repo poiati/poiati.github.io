@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Ansible on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/ansible/</link>
+    <description>Recent content in Ansible on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 01 Mar 2015 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/ansible/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>How do I Configure Environment Variables in Ansible</title>
+      <link>http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/</link>
+      <pubDate>Sun, 01 Mar 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/</guid>
+      <description>&lt;p&gt;It&amp;rsquo;s common to use environment variables to configure applications, especially to store sensible information like passwords and keys (if you are familiar to Heroku you know what I mean). Here I will show how I do it using &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; and &lt;a href=&#34;http://supervisord.org/&#34;&gt;Supervisor&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The solution is simple, in the same directory of your playbook create another named &lt;code&gt;private_vars&lt;/code&gt; (it can be named anything but I like this name because of the contrast with the &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; &lt;code&gt;group_vars&lt;/code&gt; convention). Don&amp;rsquo;t forget to put this directory in the ignore file of your CVS (you don&amp;rsquo;t want to share your passwords, right?).&lt;/p&gt;
+
+&lt;p&gt;Now create an &lt;code&gt;yaml&lt;/code&gt; file inside &lt;code&gt;private_vars&lt;/code&gt; with your configurations, e.g.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# production.yml&lt;/span&gt;
+
+&lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;---&lt;/span&gt;
+app_environment: |
+  &lt;span style=&#34;color: #336600&#34;&gt;DJANGO_SETTINGS_MODULE=&amp;quot;myapp.settings.production&amp;quot;&lt;/span&gt;
+  &lt;span style=&#34;color: #336600&#34;&gt;DB_HOST=example.com&lt;/span&gt;
+  &lt;span style=&#34;color: #336600&#34;&gt;DB_USER=frodo&lt;/span&gt;
+  &lt;span style=&#34;color: #336600&#34;&gt;DB_PASSWORD=precious&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I like to put the name of my environment in the file, e.g., &lt;code&gt;production&lt;/code&gt;, &lt;code&gt;staging&lt;/code&gt;&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Now lets configure &lt;a href=&#34;http://supervisord.org/&#34;&gt;Supervisor&lt;/a&gt;, bellow is an simple example of the &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; template file.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# example.j2.conf&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;[program:example]&lt;/span&gt;
+&lt;span style=&#34;color: #330099&#34;&gt;user&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;nobody&lt;/span&gt;
+&lt;span style=&#34;color: #330099&#34;&gt;command&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;start.sh&lt;/span&gt;
+&lt;span style=&#34;color: #330099&#34;&gt;directory&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;/usr/local/src/example&lt;/span&gt;
+&lt;span style=&#34;color: #330099&#34;&gt;environment&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;{{ app_environment | mandatory | replace(&amp;#39;\n&amp;#39;, &amp;#39;,&amp;#39;) }}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The important here is the &lt;code&gt;environment&lt;/code&gt; parameter. We are using the &lt;code&gt;app_environment&lt;/code&gt; from &lt;code&gt;production.yml&lt;/code&gt;. We are also applying two filters to it.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mandatory&lt;/code&gt; to fail fast and verbose if for some reason the variable isn&amp;rsquo;t defined&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;replace&lt;/code&gt; to format the parameter to an acceptable syntax for &lt;a href=&#34;http://supervisord.org/&#34;&gt;Supervisor&lt;/a&gt; (comma separated)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;That&amp;rsquo;s it, you are ready to go, just run your playbook passing the environment file as parameter, e.g.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ansible-playbook -l production -e @private_vars/production.yml site.yml
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;This is the way I handle environment variables in &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; but there is other solutions for sure.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

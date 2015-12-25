@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Osx on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/osx/</link>
+    <description>Recent content in Osx on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 27 May 2014 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/osx/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Copying content from vim to Mac OS clipboard</title>
+      <link>http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</link>
+      <pubDate>Tue, 27 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</guid>
+      <description>&lt;p&gt;As a heavy user of vim and Mac OSX I very often need to copy something from vim to the OS clipboard.
+This can be easily accomplished with the mouse, but I hate to touch it.&lt;/p&gt;
+
+&lt;p&gt;You can copy within the terminal using the &lt;code&gt;pbcopy&lt;/code&gt; builtin command.
+That said we can write the following function:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;! CopyToOSClipboard() range
+  exec(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;:silent !cat %:p | sed -n &amp;quot;&lt;/span&gt; . &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;a&lt;/span&gt;:firstline . &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;,&amp;quot;&lt;/span&gt; . &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;a&lt;/span&gt;:lastline . &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;p | pbcopy&amp;quot;&lt;/span&gt;)
+  :&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;redraw&lt;/span&gt;!
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;endfunction&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;A brief explanation of what is going on:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;silent&lt;/code&gt; is used to not show the process output into the screen&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;m using &lt;code&gt;sed&lt;/code&gt; to select between the lines of the range&lt;/li&gt;
+&lt;li&gt;and finally I&amp;rsquo;m feeding &lt;code&gt;pbcopy&lt;/code&gt; with the &lt;code&gt;sed&lt;/code&gt; output&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now lets map it to &lt;code&gt;&amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;c&lt;/code&gt; in normal and visual mode:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #336666&#34;&gt;nnoremap&lt;/span&gt; &amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;c&lt;/span&gt; :&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;call&lt;/span&gt; CopyToOSClipboard()&amp;lt;CR&amp;gt;
+&lt;span style=&#34;color: #336666&#34;&gt;vnoremap&lt;/span&gt; &amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;c&lt;/span&gt; :&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;call&lt;/span&gt; CopyToOSClipboard()&amp;lt;CR&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now if you hit &lt;code&gt;&amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;c&lt;/code&gt; the current cursor line will be copied to the clipboard.
+Of course you can also go into visual mode, select some lines and press &lt;code&gt;&amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;c&lt;/code&gt; to copy more than one line.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;IMPORTANT&lt;/strong&gt; Because this function works in the file of the current vim buffer, not in the buffer memory the file needs to be saved.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Installing VimRepress in MacVim (OSX Lion)</title>
+      <link>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
+      <pubDate>Tue, 07 Feb 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
+      <description>&lt;p&gt;Installing &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;VimRepress&lt;/a&gt; should be trivial for almost every case but one exception is installing it in MacOSX Lion. If you installed MacVim compiling the source without specifying the architecture it will use the x86_64 (default for Lion) even if you are using &lt;a target=&#39;_blank&#39; href=&#39;http://mxcl.github.com/homebrew/&#39;&gt;homebrew&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The problem is, the python interpreter will not work correctly if you are using the 64 bits version, you need to recompile for the i386 architecture.&lt;/p&gt;
+
+&lt;p&gt;If you are not using any package manager you just need to pass the &lt;code&gt;--with-macarchs=i386&lt;/code&gt; to the configure script.&lt;/p&gt;
+
+&lt;p&gt;In the case of homebrew you need to change the formula with the command:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew edit macvim
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;With the formula open search for &lt;code&gt;--with-macarchs&lt;/code&gt; and set it to i386 (you will need a little Ruby knowledge).&lt;/p&gt;
+
+&lt;p&gt;Uninstall macvim:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew uninstall macvim
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And install it again:&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s important to use the system ruby version when using homebrew (the one that ships with MacOS). If you are using rvm set the current ruby to the system: &lt;code&gt;rvm use system&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew install macvim
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If the install was successfully we are ready to &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;install and configure VimRepress&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

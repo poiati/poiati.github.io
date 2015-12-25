@@ -1,0 +1,234 @@
+    <!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Paulo Poiati">
+		<meta name="description" content="">
+		<meta name="generator" content="Hugo 0.15" />
+		<title>How do I Configure Environment Variables in Ansible &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<link rel="shortcut icon" href="http://poiati.github.io/images/favicon.ico">
+		<link rel="stylesheet" href="http://poiati.github.io/css/style.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/highlight.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/monosocialiconsfont.css">
+		
+		<link href="http://poiati.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Paulo Poiati | Full Stack Web Developer" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='http://poiati.github.io/'> <span class="arrow">←</span>Home</a>
+	
+
+	
+		<a href='http://poiati.github.io/about'>About</a>
+	
+
+	
+	<a class="cta" href="http://poiati.github.io/index.xml">Subscribe</a>
+	
+</nav>
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>How do I Configure Environment Variables in Ansible</h1>
+                    <h2 class="headline">March 1, 2015</h2>
+                </header>
+                <section id="post-body">
+                    <p>It&rsquo;s common to use environment variables to configure applications, especially to store sensible information like passwords and keys (if you are familiar to Heroku you know what I mean). Here I will show how I do it using <a href="http://www.ansible.com/home">Ansible</a> and <a href="http://supervisord.org/">Supervisor</a>.</p>
+
+<p>The solution is simple, in the same directory of your playbook create another named <code>private_vars</code> (it can be named anything but I like this name because of the contrast with the <a href="http://www.ansible.com/home">Ansible</a> <code>group_vars</code> convention). Don&rsquo;t forget to put this directory in the ignore file of your CVS (you don&rsquo;t want to share your passwords, right?).</p>
+
+<p>Now create an <code>yaml</code> file inside <code>private_vars</code> with your configurations, e.g.</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># production.yml</span>
+
+<span style="color: #00CCFF; font-weight: bold">---</span>
+app_environment: |
+  <span style="color: #336600">DJANGO_SETTINGS_MODULE=&quot;myapp.settings.production&quot;</span>
+  <span style="color: #336600">DB_HOST=example.com</span>
+  <span style="color: #336600">DB_USER=frodo</span>
+  <span style="color: #336600">DB_PASSWORD=precious</span>
+</pre></div>
+
+
+<p>I like to put the name of my environment in the file, e.g., <code>production</code>, <code>staging</code>&hellip;</p>
+
+<p>Now lets configure <a href="http://supervisord.org/">Supervisor</a>, bellow is an simple example of the <a href="http://www.ansible.com/home">Ansible</a> template file.</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #0099FF; font-style: italic"># example.j2.conf</span>
+<span style="color: #006699; font-weight: bold">[program:example]</span>
+<span style="color: #330099">user</span><span style="color: #555555">=</span><span style="color: #CC3300">nobody</span>
+<span style="color: #330099">command</span><span style="color: #555555">=</span><span style="color: #CC3300">start.sh</span>
+<span style="color: #330099">directory</span><span style="color: #555555">=</span><span style="color: #CC3300">/usr/local/src/example</span>
+<span style="color: #330099">environment</span><span style="color: #555555">=</span><span style="color: #CC3300">{{ app_environment | mandatory | replace(&#39;\n&#39;, &#39;,&#39;) }}</span>
+</pre></div>
+
+
+<p>The important here is the <code>environment</code> parameter. We are using the <code>app_environment</code> from <code>production.yml</code>. We are also applying two filters to it.</p>
+
+<ul>
+<li><code>mandatory</code> to fail fast and verbose if for some reason the variable isn&rsquo;t defined</li>
+<li><code>replace</code> to format the parameter to an acceptable syntax for <a href="http://supervisord.org/">Supervisor</a> (comma separated)</li>
+</ul>
+
+<p>That&rsquo;s it, you are ready to go, just run your playbook passing the environment file as parameter, e.g.</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>ansible-playbook -l production -e @private_vars/production.yml site.yml
+</pre></div>
+</p>
+
+<p>This is the way I handle environment variables in <a href="http://www.ansible.com/home">Ansible</a> but there is other solutions for sure.</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/poiati">
+                        <img class="avatar" src="http://poiati.github.io/images/avatar.png">
+                        <div>
+                            <span class="dark">Paulo Poiati</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fpoiati.github.io%2f2015%2f03%2f01%2fhow-do-i-configure-environment-variables-in-ansible%2f - How%20do%20I%20Configure%20Environment%20Variables%20in%20Ansible by @poiati"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'poiati';
+    var disqus_identifier = 'http:\/\/poiati.github.io\/2015\/03\/01\/how-do-i-configure-environment-variables-in-ansible\/';
+    var disqus_title = 'How do I Configure Environment Variables in Ansible';
+    var disqus_url = 'http:\/\/poiati.github.io\/2015\/03\/01\/how-do-i-configure-environment-variables-in-ansible\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/">How do I Configure Environment Variables in Ansible<aside class="dates">Mar 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/">Copying content from vim to Mac OS clipboard<aside class="dates">May 27</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/10/31/django-outbox-released/">Django Outbox Released<aside class="dates">Oct 31</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/">Running Cron In Elastic Beanstalk Auto-Scaling Environment<aside class="dates">Aug 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/">Flask flash messages testing<aside class="dates">Feb 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/">Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew<aside class="dates">Jan 28</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/">Browsing between most recent buffers in VIM<aside class="dates">Jun 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/">A not well known and often over looked css property: box-sizing<aside class="dates">May 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/16/jquery-builder-introduction/">jQuery Builder: Introduction<aside class="dates">Feb 16</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/">Installing VimRepress in MacVim (OSX Lion)<aside class="dates">Feb 7</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        
+<div id="social">
+    
+    <a class="symbol" href="https://www.github.com/poiati">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/poiati">
+        twitterbird
+    </a>
+    
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2015 Paulo Poiati
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://poiati.github.io/js/main.js"></script>
+<script src="http://poiati.github.io/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+    </body>
+</html>

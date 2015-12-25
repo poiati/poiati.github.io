@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Elasticbeanstalk on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/elasticbeanstalk/</link>
+    <description>Recent content in Elasticbeanstalk on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 25 Aug 2013 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/elasticbeanstalk/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Running Cron In Elastic Beanstalk Auto-Scaling Environment</title>
+      <link>http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</link>
+      <pubDate>Sun, 25 Aug 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</guid>
+      <description>&lt;p&gt;Who already worked with &lt;a target=&#34;_blank&#34; href=&#34;http://aws.amazon.com/elasticbeanstalk/&#34;&gt;Elastic Beanstalk&lt;/a&gt;
+knows the lack of documentation of the platform.
+If you need to deploy a simple application it&amp;rsquo;s straight forward, but
+if you need to do more complex stuff, it can be a pain in the ass.&lt;/p&gt;
+
+&lt;p&gt;The problem with Cron and Elastic Beanstalk begins when we are using Auto Scaling.
+Generally we need only one of our machines in the cluster to run the jobs, not all of them.
+We can use the &lt;code&gt;leader_only&lt;/code&gt; option to ensure the job will just run in the leader of the cluster,
+but it&amp;rsquo;s not enough, since the leader can change over time, for example, during deploys.
+To ensure all the machines crontab is wiped in every deploy we need to add
+another &lt;code&gt;container_command&lt;/code&gt; (before the command to add the crontab).&lt;/p&gt;
+
+&lt;p&gt;Add this to your &lt;a target=&#34;_blank&#34; href=&#34;http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html&#34;&gt;configuration file&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;container_commands:
+  01_remove_old_cron_jobs:
+    command: &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;crontab&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;-r&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;||&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;exit&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;0&amp;quot;&lt;/span&gt;
+  02_cronjobs:
+    command: &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;cat&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;.ebextensions/crontab&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;|&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;crontab&amp;quot;&lt;/span&gt;
+    leader_only: true
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The &lt;code&gt;|| exit 0&lt;/code&gt; is mandatory because if there is no crontab in the machine the &lt;code&gt;crontab -r&lt;/code&gt;
+command will return a status code &amp;gt; 0 (an error). Elastic Beanstalk stop the deploy process
+if one of the &lt;code&gt;container_commands&lt;/code&gt; fail.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

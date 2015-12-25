@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Brew on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/brew/</link>
+    <description>Recent content in Brew on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 28 Jan 2013 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/brew/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew</title>
+      <link>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</link>
+      <pubDate>Mon, 28 Jan 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</guid>
+      <description>&lt;p&gt;Installing &lt;a href=&#34;https://github.com/rmagick/rmagic&#34;&gt;RMagick&lt;/a&gt; with homebrew should be
+trivial, but it&amp;rsquo;s not. For some reason the last version of RMagick
+&lt;code&gt;(2.13.1)&lt;/code&gt; does not compile with the last version of
+&lt;a href=&#34;http://www.imagemagick.org/script/index.php&#34;&gt;ImageMagick&lt;/a&gt; &lt;code&gt;(6.8.2-0)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you install the last version of ImageMagick with homebrew it will
+work without problems but the RMagick extension will fail during the
+build with the following error:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;checking for ImageMagick version &amp;gt;= 6.4.9... yes
+checking for HDRI disabled version of ImageMagick... yes
+checking for stdint.h... yes
+checking for sys/types.h... yes
+checking for wand/MagickWand.h... yes
+checking for InitializeMagick() in -lMagickCore... no
+checking for InitializeMagick() in -lMagick... no
+checking for InitializeMagick() in -lMagick++... no
+Can&amp;#39;t install RMagick 2.13.1. Can&amp;#39;t find the ImageMagick library or one
+of the dependent libraries. Check the mkmf.log file for more detailed
+information.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I&amp;rsquo;m not sure but I think there are some compatibility problems with the
+new versions of ImageMagick and RMagick. One version I know works well
+is &lt;code&gt;6.6.7-0&lt;/code&gt; let&amp;rsquo;s install it using homebrew.&lt;/p&gt;
+
+&lt;p&gt;If you already have ImageMagick installed uninstall it before continue.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew uninstall imagemagick
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s edit the brew formula.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew edit imagemagick
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;You should set the &lt;code&gt;url&lt;/code&gt; to
+&lt;code&gt;ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/ImageMagick-6.6.7-0.tar.gz&lt;/code&gt;
+and comment the &lt;code&gt;sha256&lt;/code&gt; line.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Imagemagick&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #336600&#34;&gt;Formula&lt;/span&gt;
+  homepage &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;http://www.imagemagick.org&amp;#39;&lt;/span&gt;
+
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# upstream&amp;#39;s stable tarballs tend to disappear, so we provide our own mirror&lt;/span&gt;
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Tarball from: http://www.imagemagick.org/download/ImageMagick.tar.gz&lt;/span&gt;
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# SHA-256 from: http://www.imagemagick.org/download/digest.rdf&lt;/span&gt;
+ 
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Remove this url&lt;/span&gt;
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# url &amp;#39;http://downloads.sf.net/project/machomebrew/mirror/ImageMagick-6.8.0-10.tar.gz&amp;#39;&lt;/span&gt;
+ 
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Add this new url&lt;/span&gt;
+  url &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/ImageMagick-6.6.7-0.tar.gz&amp;#39;&lt;/span&gt;
+
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Comment this line&lt;/span&gt;
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# sha256 &amp;#39;b3dfcb44300f73e73ffa8deef8bba4cf43f03d7150bf1fd0febedceac1a45c7e&amp;#39;&lt;/span&gt;
+
+  head &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;https://www.imagemagick.org/subversion/ImageMagick/trunk&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color: #FFCC33&#34;&gt;:using&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;=&amp;gt;&lt;/span&gt; &lt;span style=&#34;color: #336600&#34;&gt;UnsafeSubversionDownloadStrategy&lt;/span&gt;
+
+  &lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;
+  &lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;
+  &lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;After saving the file you can install ImageMagick. You should also disable
+openmp and build it from source.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew install imagemagick --disable-openmp --build-from-source
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now the RMagick installation should work like a charm!&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;gem install rmagick
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Installing VimRepress in MacVim (OSX Lion)</title>
+      <link>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
+      <pubDate>Tue, 07 Feb 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
+      <description>&lt;p&gt;Installing &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;VimRepress&lt;/a&gt; should be trivial for almost every case but one exception is installing it in MacOSX Lion. If you installed MacVim compiling the source without specifying the architecture it will use the x86_64 (default for Lion) even if you are using &lt;a target=&#39;_blank&#39; href=&#39;http://mxcl.github.com/homebrew/&#39;&gt;homebrew&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The problem is, the python interpreter will not work correctly if you are using the 64 bits version, you need to recompile for the i386 architecture.&lt;/p&gt;
+
+&lt;p&gt;If you are not using any package manager you just need to pass the &lt;code&gt;--with-macarchs=i386&lt;/code&gt; to the configure script.&lt;/p&gt;
+
+&lt;p&gt;In the case of homebrew you need to change the formula with the command:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew edit macvim
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;With the formula open search for &lt;code&gt;--with-macarchs&lt;/code&gt; and set it to i386 (you will need a little Ruby knowledge).&lt;/p&gt;
+
+&lt;p&gt;Uninstall macvim:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew uninstall macvim
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And install it again:&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s important to use the system ruby version when using homebrew (the one that ships with MacOS). If you are using rvm set the current ruby to the system: &lt;code&gt;rvm use system&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew install macvim
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If the install was successfully we are ready to &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;install and configure VimRepress&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

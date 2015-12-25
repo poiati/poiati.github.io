@@ -1,0 +1,1108 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/</link>
+    <description>Recent content on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 01 Mar 2015 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>How do I Configure Environment Variables in Ansible</title>
+      <link>http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/</link>
+      <pubDate>Sun, 01 Mar 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/</guid>
+      <description>&lt;p&gt;It&amp;rsquo;s common to use environment variables to configure applications, especially to store sensible information like passwords and keys (if you are familiar to Heroku you know what I mean). Here I will show how I do it using &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; and &lt;a href=&#34;http://supervisord.org/&#34;&gt;Supervisor&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The solution is simple, in the same directory of your playbook create another named &lt;code&gt;private_vars&lt;/code&gt; (it can be named anything but I like this name because of the contrast with the &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; &lt;code&gt;group_vars&lt;/code&gt; convention). Don&amp;rsquo;t forget to put this directory in the ignore file of your CVS (you don&amp;rsquo;t want to share your passwords, right?).&lt;/p&gt;
+
+&lt;p&gt;Now create an &lt;code&gt;yaml&lt;/code&gt; file inside &lt;code&gt;private_vars&lt;/code&gt; with your configurations, e.g.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# production.yml&lt;/span&gt;
+
+&lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;---&lt;/span&gt;
+app_environment: |
+  &lt;span style=&#34;color: #336600&#34;&gt;DJANGO_SETTINGS_MODULE=&amp;quot;myapp.settings.production&amp;quot;&lt;/span&gt;
+  &lt;span style=&#34;color: #336600&#34;&gt;DB_HOST=example.com&lt;/span&gt;
+  &lt;span style=&#34;color: #336600&#34;&gt;DB_USER=frodo&lt;/span&gt;
+  &lt;span style=&#34;color: #336600&#34;&gt;DB_PASSWORD=precious&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I like to put the name of my environment in the file, e.g., &lt;code&gt;production&lt;/code&gt;, &lt;code&gt;staging&lt;/code&gt;&amp;hellip;&lt;/p&gt;
+
+&lt;p&gt;Now lets configure &lt;a href=&#34;http://supervisord.org/&#34;&gt;Supervisor&lt;/a&gt;, bellow is an simple example of the &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; template file.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# example.j2.conf&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;[program:example]&lt;/span&gt;
+&lt;span style=&#34;color: #330099&#34;&gt;user&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;nobody&lt;/span&gt;
+&lt;span style=&#34;color: #330099&#34;&gt;command&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;start.sh&lt;/span&gt;
+&lt;span style=&#34;color: #330099&#34;&gt;directory&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;/usr/local/src/example&lt;/span&gt;
+&lt;span style=&#34;color: #330099&#34;&gt;environment&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;{{ app_environment | mandatory | replace(&amp;#39;\n&amp;#39;, &amp;#39;,&amp;#39;) }}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The important here is the &lt;code&gt;environment&lt;/code&gt; parameter. We are using the &lt;code&gt;app_environment&lt;/code&gt; from &lt;code&gt;production.yml&lt;/code&gt;. We are also applying two filters to it.&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;mandatory&lt;/code&gt; to fail fast and verbose if for some reason the variable isn&amp;rsquo;t defined&lt;/li&gt;
+&lt;li&gt;&lt;code&gt;replace&lt;/code&gt; to format the parameter to an acceptable syntax for &lt;a href=&#34;http://supervisord.org/&#34;&gt;Supervisor&lt;/a&gt; (comma separated)&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;That&amp;rsquo;s it, you are ready to go, just run your playbook passing the environment file as parameter, e.g.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;ansible-playbook -l production -e @private_vars/production.yml site.yml
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;This is the way I handle environment variables in &lt;a href=&#34;http://www.ansible.com/home&#34;&gt;Ansible&lt;/a&gt; but there is other solutions for sure.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Copying content from vim to Mac OS clipboard</title>
+      <link>http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</link>
+      <pubDate>Tue, 27 May 2014 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/</guid>
+      <description>&lt;p&gt;As a heavy user of vim and Mac OSX I very often need to copy something from vim to the OS clipboard.
+This can be easily accomplished with the mouse, but I hate to touch it.&lt;/p&gt;
+
+&lt;p&gt;You can copy within the terminal using the &lt;code&gt;pbcopy&lt;/code&gt; builtin command.
+That said we can write the following function:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;! CopyToOSClipboard() range
+  exec(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;:silent !cat %:p | sed -n &amp;quot;&lt;/span&gt; . &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;a&lt;/span&gt;:firstline . &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;,&amp;quot;&lt;/span&gt; . &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;a&lt;/span&gt;:lastline . &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;p | pbcopy&amp;quot;&lt;/span&gt;)
+  :&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;redraw&lt;/span&gt;!
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;endfunction&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;A brief explanation of what is going on:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;code&gt;silent&lt;/code&gt; is used to not show the process output into the screen&lt;/li&gt;
+&lt;li&gt;I&amp;rsquo;m using &lt;code&gt;sed&lt;/code&gt; to select between the lines of the range&lt;/li&gt;
+&lt;li&gt;and finally I&amp;rsquo;m feeding &lt;code&gt;pbcopy&lt;/code&gt; with the &lt;code&gt;sed&lt;/code&gt; output&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;Now lets map it to &lt;code&gt;&amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;c&lt;/code&gt; in normal and visual mode:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #336666&#34;&gt;nnoremap&lt;/span&gt; &amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;c&lt;/span&gt; :&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;call&lt;/span&gt; CopyToOSClipboard()&amp;lt;CR&amp;gt;
+&lt;span style=&#34;color: #336666&#34;&gt;vnoremap&lt;/span&gt; &amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;c&lt;/span&gt; :&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;call&lt;/span&gt; CopyToOSClipboard()&amp;lt;CR&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now if you hit &lt;code&gt;&amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;c&lt;/code&gt; the current cursor line will be copied to the clipboard.
+Of course you can also go into visual mode, select some lines and press &lt;code&gt;&amp;lt;Leader&amp;gt;&amp;lt;Leader&amp;gt;c&lt;/code&gt; to copy more than one line.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;IMPORTANT&lt;/strong&gt; Because this function works in the file of the current vim buffer, not in the buffer memory the file needs to be saved.&lt;/p&gt;
+&lt;/blockquote&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Django Outbox Released</title>
+      <link>http://poiati.github.io/2013/10/31/django-outbox-released/</link>
+      <pubDate>Thu, 31 Oct 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2013/10/31/django-outbox-released/</guid>
+      <description>&lt;p&gt;I enjoy the development experience of the Django framework. But there is something I miss, a better way to evaluate and debug emails while coding.&lt;/p&gt;
+
+&lt;p&gt;What I am used to do is enable file based email backend, and see the emails directly on my file system. This is nice, but,
+if I had a web interface this should be even better. That is the idea behind &lt;a href=&#34;https://github.com/poiati/django-outbox&#34;&gt;django-outbox&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;You can also preview html emails.&lt;/p&gt;
+
+&lt;div style=&#34;text-align: center;&#34;&gt;
+  &lt;a href=&#34;https://s3.amazonaws.com/poiati/django-outbox.png&#34; target=&#34;_blank&#34;&gt;
+    &lt;img src=&#39;https://s3.amazonaws.com/poiati/django-outbox.png&#39; alt=&#39;Django Outbox&#39; style=&#39;width: 40%;&#39;/&gt;
+  &lt;/a&gt;
+  &lt;a href=&#34;https://s3.amazonaws.com/poiati/django-outbox-mail.png&#34;&gt;
+    &lt;img src=&#39;https://s3.amazonaws.com/poiati/django-outbox-mail.png&#39; alt=&#39;Django Outbox&#39; style=&#39;width: 40%;&#39;/&gt;
+  &lt;/a&gt;
+&lt;/div&gt;
+
+&lt;p&gt;The configuration is simple, just follow the instructions in the &lt;a href=&#34;https://github.com/poiati/django-outbox&#34;&gt;README&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Running Cron In Elastic Beanstalk Auto-Scaling Environment</title>
+      <link>http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</link>
+      <pubDate>Sun, 25 Aug 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/</guid>
+      <description>&lt;p&gt;Who already worked with &lt;a target=&#34;_blank&#34; href=&#34;http://aws.amazon.com/elasticbeanstalk/&#34;&gt;Elastic Beanstalk&lt;/a&gt;
+knows the lack of documentation of the platform.
+If you need to deploy a simple application it&amp;rsquo;s straight forward, but
+if you need to do more complex stuff, it can be a pain in the ass.&lt;/p&gt;
+
+&lt;p&gt;The problem with Cron and Elastic Beanstalk begins when we are using Auto Scaling.
+Generally we need only one of our machines in the cluster to run the jobs, not all of them.
+We can use the &lt;code&gt;leader_only&lt;/code&gt; option to ensure the job will just run in the leader of the cluster,
+but it&amp;rsquo;s not enough, since the leader can change over time, for example, during deploys.
+To ensure all the machines crontab is wiped in every deploy we need to add
+another &lt;code&gt;container_command&lt;/code&gt; (before the command to add the crontab).&lt;/p&gt;
+
+&lt;p&gt;Add this to your &lt;a target=&#34;_blank&#34; href=&#34;http://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html&#34;&gt;configuration file&lt;/a&gt;.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;container_commands:
+  01_remove_old_cron_jobs:
+    command: &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;crontab&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;-r&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;||&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;exit&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;0&amp;quot;&lt;/span&gt;
+  02_cronjobs:
+    command: &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;cat&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;.ebextensions/crontab&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;|&lt;/span&gt;&lt;span style=&#34;color: #003333&#34;&gt; &lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;crontab&amp;quot;&lt;/span&gt;
+    leader_only: true
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The &lt;code&gt;|| exit 0&lt;/code&gt; is mandatory because if there is no crontab in the machine the &lt;code&gt;crontab -r&lt;/code&gt;
+command will return a status code &amp;gt; 0 (an error). Elastic Beanstalk stop the deploy process
+if one of the &lt;code&gt;container_commands&lt;/code&gt; fail.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Flask flash messages testing</title>
+      <link>http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/</link>
+      <pubDate>Fri, 22 Feb 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/</guid>
+      <description>&lt;p&gt;Testing with &lt;a href=&#34;http://flask.pocoo.org/&#34;&gt;Flask&lt;/a&gt; is generally
+straightforward but some things aren&amp;rsquo;t
+trivial. The &lt;a href=&#34;http://pythonhosted.org/Flask-Testing/&#34;&gt;Flask-Testing&lt;/a&gt; extension helps us with some really useful
+assertions like &lt;code&gt;TestCase#assert_context&lt;/code&gt; and
+&lt;code&gt;TestCase#assert_template_used&lt;/code&gt; but it miss a way to test flash messages.&lt;/p&gt;
+
+&lt;p&gt;One of the ways to test flashes is asserting if the message is in the
+response data.&lt;/p&gt;
+
+&lt;p&gt;Suppose the production code.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;@app.route&lt;/span&gt;(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;/post/&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;new_post&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; storage&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;create_post(request&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;form[&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;post&amp;#39;&lt;/span&gt;]):
+    flash(&lt;span style=&#34;color: #CC3300&#34;&gt;u&amp;#39;Post added&amp;#39;&lt;/span&gt;)
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; redirect(url_for(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;home&amp;#39;&lt;/span&gt;))
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; render_template(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;new-post.html&amp;#39;&lt;/span&gt;)
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And the test code.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;should_flash_a_success_message&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  response &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;client&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;post(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;/post/&amp;#39;&lt;/span&gt;, data&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;valid_post_data,
+                              follow_redirects&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;)
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Post added&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #000000; font-weight: bold&#34;&gt;in&lt;/span&gt; response&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;data
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This works but personally I don&amp;rsquo;t like it. One reason is we need to
+follow the redirect and this can lead to testing the same thing twice
+because we should have a test for the &lt;code&gt;home&lt;/code&gt; route already.&lt;/p&gt;
+
+&lt;p&gt;The other reason is related to isolation. If we want to test the &lt;code&gt;view&lt;/code&gt; without
+rendering the template we can&amp;rsquo;t because we are making assertions in the
+generated document.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;Curiosity: &lt;code&gt;Rails&lt;/code&gt; by default doesn&amp;rsquo;t render any view in
+controller specs. In &lt;code&gt;Flask-Testing&lt;/code&gt; it renders but you can
+&lt;a href=&#34;https://github.com/jarus/flask-testing/commit/382c9565f8c460d876d23ee0b8562e433d057240&#34;&gt;turn off template rendering&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Another way to test flash messages is using a &lt;code&gt;mock&lt;/code&gt;. You replace the
+&lt;code&gt;flash&lt;/code&gt; method with a &lt;code&gt;mock&lt;/code&gt; and use expectations to assert flash
+calls. This works but I like to avoid mocks when possible.&lt;/p&gt;
+
+&lt;p&gt;My solution consist in defining a new method to do the job. I recommend you to
+define it in a base test class so you can reuse it.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;from&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;flask.ext.testing&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; TestCase
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;myapp&lt;/span&gt;
+
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;BaseTest&lt;/span&gt;(TestCase):
+                                                                                
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;create_app&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+        &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; myapp&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;create_app(TESTING&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;)
+                                                                                                 
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;assert_flashes&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;, expected_message, expected_category&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;message&amp;#39;&lt;/span&gt;):
+        &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;with&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;client&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;session_transaction() &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;as&lt;/span&gt; session:
+            &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;try&lt;/span&gt;:
+                category, message &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; session[&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;_flashes&amp;#39;&lt;/span&gt;][&lt;span style=&#34;color: #FF6600&#34;&gt;0&lt;/span&gt;]
+            &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;except&lt;/span&gt; &lt;span style=&#34;color: #CC0000; font-weight: bold&#34;&gt;KeyError&lt;/span&gt;:
+                &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;raise&lt;/span&gt; &lt;span style=&#34;color: #CC0000; font-weight: bold&#34;&gt;AssertionError&lt;/span&gt;(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;nothing flashed&amp;#39;&lt;/span&gt;)
+            &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; expected_message &lt;span style=&#34;color: #000000; font-weight: bold&#34;&gt;in&lt;/span&gt; message
+            &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; expected_category &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; category
+&lt;/pre&gt;&lt;/div&gt;
+
+And now my test looks like this.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;should_flash_a_success_message&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;client&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;post(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;/post/&amp;#39;&lt;/span&gt;, data&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;valid_post_data)
+
+  &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;assert_flashes(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Post added&amp;#39;&lt;/span&gt;)
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Don&amp;rsquo;t forget to subclass BaseTest in your test classes. Another trick
+thing about flashes is that they need the session to work and sessions
+doesn&amp;rsquo;t work without the &lt;code&gt;SECRET_KEY&lt;/code&gt; set in Flask so be sure you set it
+before running the tests.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew</title>
+      <link>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</link>
+      <pubDate>Mon, 28 Jan 2013 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/</guid>
+      <description>&lt;p&gt;Installing &lt;a href=&#34;https://github.com/rmagick/rmagic&#34;&gt;RMagick&lt;/a&gt; with homebrew should be
+trivial, but it&amp;rsquo;s not. For some reason the last version of RMagick
+&lt;code&gt;(2.13.1)&lt;/code&gt; does not compile with the last version of
+&lt;a href=&#34;http://www.imagemagick.org/script/index.php&#34;&gt;ImageMagick&lt;/a&gt; &lt;code&gt;(6.8.2-0)&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;If you install the last version of ImageMagick with homebrew it will
+work without problems but the RMagick extension will fail during the
+build with the following error:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;checking for ImageMagick version &amp;gt;= 6.4.9... yes
+checking for HDRI disabled version of ImageMagick... yes
+checking for stdint.h... yes
+checking for sys/types.h... yes
+checking for wand/MagickWand.h... yes
+checking for InitializeMagick() in -lMagickCore... no
+checking for InitializeMagick() in -lMagick... no
+checking for InitializeMagick() in -lMagick++... no
+Can&amp;#39;t install RMagick 2.13.1. Can&amp;#39;t find the ImageMagick library or one
+of the dependent libraries. Check the mkmf.log file for more detailed
+information.
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;I&amp;rsquo;m not sure but I think there are some compatibility problems with the
+new versions of ImageMagick and RMagick. One version I know works well
+is &lt;code&gt;6.6.7-0&lt;/code&gt; let&amp;rsquo;s install it using homebrew.&lt;/p&gt;
+
+&lt;p&gt;If you already have ImageMagick installed uninstall it before continue.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew uninstall imagemagick
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now let&amp;rsquo;s edit the brew formula.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew edit imagemagick
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;You should set the &lt;code&gt;url&lt;/code&gt; to
+&lt;code&gt;ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/ImageMagick-6.6.7-0.tar.gz&lt;/code&gt;
+and comment the &lt;code&gt;sha256&lt;/code&gt; line.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Imagemagick&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #336600&#34;&gt;Formula&lt;/span&gt;
+  homepage &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;http://www.imagemagick.org&amp;#39;&lt;/span&gt;
+
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# upstream&amp;#39;s stable tarballs tend to disappear, so we provide our own mirror&lt;/span&gt;
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Tarball from: http://www.imagemagick.org/download/ImageMagick.tar.gz&lt;/span&gt;
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# SHA-256 from: http://www.imagemagick.org/download/digest.rdf&lt;/span&gt;
+ 
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Remove this url&lt;/span&gt;
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# url &amp;#39;http://downloads.sf.net/project/machomebrew/mirror/ImageMagick-6.8.0-10.tar.gz&amp;#39;&lt;/span&gt;
+ 
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Add this new url&lt;/span&gt;
+  url &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/ImageMagick-6.6.7-0.tar.gz&amp;#39;&lt;/span&gt;
+
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# Comment this line&lt;/span&gt;
+  &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;# sha256 &amp;#39;b3dfcb44300f73e73ffa8deef8bba4cf43f03d7150bf1fd0febedceac1a45c7e&amp;#39;&lt;/span&gt;
+
+  head &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;https://www.imagemagick.org/subversion/ImageMagick/trunk&amp;#39;&lt;/span&gt;,
+    &lt;span style=&#34;color: #FFCC33&#34;&gt;:using&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;=&amp;gt;&lt;/span&gt; &lt;span style=&#34;color: #336600&#34;&gt;UnsafeSubversionDownloadStrategy&lt;/span&gt;
+
+  &lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;
+  &lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;
+  &lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;After saving the file you can install ImageMagick. You should also disable
+openmp and build it from source.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew install imagemagick --disable-openmp --build-from-source
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now the RMagick installation should work like a charm!&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;gem install rmagick
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Browsing between most recent buffers in VIM</title>
+      <link>http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/</link>
+      <pubDate>Sun, 17 Jun 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/</guid>
+      <description>&lt;p&gt;Vim has the concept of buffer, a buffer can be just an open file. For
+example, to list all the open buffers type &lt;code&gt;:ls&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;The intention here is not to explain buffers, there is a lot of good
+sources for that (ex: &lt;a href=&#34;http://vim.wikia.com/wiki/Vim_buffer_FAQ&#34;&gt;http://vim.wikia.com/wiki/Vim_buffer_FAQ&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;One of the Vim commands I use a lot is the &lt;code&gt;:b#&lt;/code&gt; to switch back to the
+last used buffer (the one you were before the actual open). This can be
+very useful, for example, if you are working with the application code
+in one buffer and the correspondent unit test in the other one (another
+great way to work with two related files is using the &lt;code&gt;:split&lt;/code&gt; and
+&lt;code&gt;:vsplit&lt;/code&gt; commands).&lt;/p&gt;
+
+&lt;p&gt;But typing &lt;code&gt;:b#&lt;/code&gt; and pressing the enter every time can be really annoying. Here is a simple key map to help with this:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; SwitchBuffer()
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;b&lt;/span&gt;#
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;endfunction&lt;/span&gt;
+
+nmap &amp;lt;Tab&amp;gt; :&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;call&lt;/span&gt; SwitchBuffer()&amp;lt;CR&amp;gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Put the code above in your &lt;code&gt;.vimrc&lt;/code&gt; file. Now every time you press &lt;code&gt;Tab&lt;/code&gt; in normal mode the buffer will switch.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>A not well known and often over looked css property: box-sizing</title>
+      <link>http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</link>
+      <pubDate>Sat, 12 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</guid>
+      <description>&lt;p&gt;The &lt;code&gt;box-sizing&lt;/code&gt; (introduced in CSS3) is one of the forgotten properties, no one talks about it but can be really useful in some situations.&lt;/p&gt;
+
+&lt;p&gt;What it does? In the &lt;a href=&#34;https://developer.mozilla.org/En/CSS/Box-sizing&#34;&gt;Mozilla words&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;The box-sizing CSS property is used to alter the default CSS box model used to calculate widths and heights of elements. It is possible to use this property to emulate the behavior of browsers that do not correctly support the CSS box model specification.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;There are two possible values for this property:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;content-box (default)&lt;/li&gt;
+&lt;li&gt;boder-box&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The &lt;code&gt;content-box&lt;/code&gt; is the default value, when it is set, the &lt;code&gt;padding&lt;/code&gt; and &lt;code&gt;border&lt;/code&gt; properties are put outside the bounds of your element, for example:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;  &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;div&lt;/span&gt;&lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;.box&lt;/span&gt; { &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;width&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;200px&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;height&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;200px&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;border&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;15px&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;solid&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;black&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;padding&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;10px&lt;/span&gt;; }
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;div style=&#34;text-align: center; font-size: 18px; width: 200px; 
+            height: 200px; border: 15px solid black; padding: 10px; 
+            background: #AAA; margin: 0 auto;&#34;&gt;
+  &lt;span&gt;250px&lt;/span&gt;
+&lt;/div&gt;
+&lt;br&gt;
+&lt;br&gt;&lt;/p&gt;
+
+&lt;p&gt;The above box total width and height will be:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;200 + (2 * 15) + (2 * 10) = 250px
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now, if we change to border-box:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;div&lt;/span&gt;&lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;.box&lt;/span&gt; { 
+  box&lt;span style=&#34;color: #555555&#34;&gt;-&lt;/span&gt;sizing&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;border&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;-&lt;/span&gt;box; 
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;width&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;200px&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;height&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;200px&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;border&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;15px&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;solid&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;black&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;padding&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;10px&lt;/span&gt;; 
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;div style=&#34;text-align: center; font-size: 18px; box-sizing: border-box; width: 200px; height: 200px; border: 15px solid black; padding: 10px; background: #AAA; margin: 10px auto;&#34;&gt;
+  &lt;span&gt;200px&lt;/span&gt;
+&lt;/div&gt;
+&lt;br&gt;
+&lt;br&gt;&lt;/p&gt;
+
+&lt;p&gt;The box size stay unchanged. By the way, this behavior in the box model is analogous to Internet Explorer when the document is in Quirks mode.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>jQuery Builder: Introduction</title>
+      <link>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</link>
+      <pubDate>Thu, 16 Feb 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/02/16/jquery-builder-introduction/</guid>
+      <description>
+
+&lt;h2 id=&#34;overview:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Overview&lt;/h2&gt;
+
+&lt;p&gt;Which web developer never built DOM elements programmatically? It’s a
+mess, doesn’t is?&lt;/p&gt;
+
+&lt;p&gt;Well, it was a lot worse in the past. When the only way to do that was appending strings or with the standard Document Api (&lt;code&gt;Document#createElement&lt;/code&gt;, &lt;code&gt;Document#appendChild&lt;/code&gt; &amp;hellip;). But In the past few years the things got better. Javascript Frameworks emerged and one of the them was the well know jQuery.&lt;/p&gt;
+
+&lt;p&gt;jQuery has a smarter API to build DOM elements. The main advantage of using jQuery is the &lt;a href=&#34;http://en.wikipedia.org/wiki/Method_chaining&#34;&gt;method chaining&lt;/a&gt;. But is out there a better approach ? I was seeking for one and I found just a few projects, one of them was &lt;a href=&#34;https://github.com/jeremyruppel/jquery.builder&#34;&gt;jquery.builder&lt;/a&gt; from Jeremy Ruppel, a new but promising project. One week later I was helping her to evolve it.&lt;/p&gt;
+
+&lt;h2 id=&#34;usage:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Usage&lt;/h2&gt;
+
+&lt;p&gt;To start building, use the &lt;code&gt;build&lt;/code&gt; method. You can give this build method a block.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.div( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;hello!&amp;#39;&lt;/span&gt; );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =  &amp;lt;div&amp;gt;hello!&amp;lt;/div&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;In this block and any child blocks, &lt;code&gt;this&lt;/code&gt; refers to the builder instance. The same builder instance will also be passed to the block if you want to name the reference.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( b )
+{
+  b.div( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;hello!&amp;#39;&lt;/span&gt; );
+} );
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The builder object has a method for every common html tag, but you can add your own tag methods easily (more on that later).&lt;/p&gt;
+
+&lt;p&gt;For building node hierarchies, you can give any tag method a block and the builder will adjust its scope appropriately:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.div( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+  {
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.div( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;nested&amp;#39;&lt;/span&gt; );
+  } );
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.span( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+  {
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.a( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;hierarchy&amp;#39;&lt;/span&gt; );
+  } );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =&amp;gt; &amp;lt;div&amp;gt;&amp;lt;div&amp;gt;nested&amp;lt;/div&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;span&amp;gt;&amp;lt;a&amp;gt;hierarchy&amp;lt;/a&amp;gt;&amp;lt;/span&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Scope can be nested as deeply as you want. Go crazy.&lt;/p&gt;
+
+&lt;p&gt;You can pass a hash of options to any tag method and those key-value pairs will be added as attributes to the created node.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.a( { href &lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;github.com&amp;#39;&lt;/span&gt; } );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =&amp;gt; &amp;lt;a href=&amp;quot;github.com&amp;quot;&amp;gt;&amp;lt;/a&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The options hash may also be passed after the node text, like:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.a( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;github rules&amp;#39;&lt;/span&gt;, { href &lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;github.com&amp;#39;&lt;/span&gt; } );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =&amp;gt; &amp;lt;a href=&amp;quot;github.com&amp;quot;&amp;gt;github rules&amp;lt;/a&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If you need the reference to the current scope DOM element you can use the $ variable. For Example, to add a mouse click event to an element:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.span(&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; ( )
+  {
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.text( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Click Me&amp;#39;&lt;/span&gt; );
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.$.click(&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+    {
+      alert( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Hello There!&amp;#39;&lt;/span&gt; );
+    } );
+  } );
+} );
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;h2 id=&#34;custom-tags:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Custom Tags&lt;/h2&gt;
+
+&lt;p&gt;If you&amp;rsquo;re building XML, you&amp;rsquo;re going to need some custom tags. &lt;strong&gt;jquery.builder&lt;/strong&gt; can be set up to build any tag that isn&amp;rsquo;t a reserved word. Just pass your tag name to the &lt;code&gt;build&lt;/code&gt; method and it will be available on any new builders.
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;custom&amp;#39;&lt;/span&gt; );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.custom( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;sweet&amp;#39;&lt;/span&gt; );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// =&amp;gt; &amp;lt;custom&amp;gt;sweet&amp;lt;/custom&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If at any point you need to reset the tag list to the defaults, just pass &lt;em&gt;false&lt;/em&gt; to the &lt;code&gt;build&lt;/code&gt; method.&lt;/p&gt;
+
+&lt;p&gt;Right now, custom tags are shared between all builder instances regardless of their context node.&lt;/p&gt;
+
+&lt;h2 id=&#34;expressions-syntax:5c3045aa838b92fa2843399a7c7ab350&#34;&gt;Expressions Syntax&lt;/h2&gt;
+
+&lt;p&gt;Expressions is the easiest way to create nested elements. Using it you don&amp;rsquo;t need to specify a function to every nested object. You can also mix expressions style with the standard builder style.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;body div ul&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; ( )
+  {
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;li&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; ( )
+    {
+      &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.a( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt; ( ) { &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;.text( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Hello World&amp;#39;&lt;/span&gt; ); }, { &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;text&amp;#39;&lt;/span&gt; } );
+    } );
+  } );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// &amp;lt;body&amp;gt;&amp;lt;div&amp;gt;&amp;lt;ul&amp;gt;&amp;lt;li&amp;gt;&amp;lt;a&amp;gt;Hello World&amp;lt;/a&amp;gt;&amp;lt;/li&amp;gt;&amp;lt;/ul&amp;gt;&amp;lt;/div&amp;gt;&amp;lt;/body&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If the tag name is omitted but a class or id is present it will infer a &lt;code&gt;div&lt;/code&gt; element, for example:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).build( &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;function&lt;/span&gt;( )
+{
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;this&lt;/span&gt;( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;.foo&amp;#39;&lt;/span&gt;, &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Hello, Foo!!!&amp;#39;&lt;/span&gt; );
+} );
+
+$( &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;#context&amp;#39;&lt;/span&gt; ).html( ); &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// &amp;lt;div&amp;gt;Hello, Foo!!!&amp;lt;/div&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The source code and documentation is available: on the &lt;a href=&#34;https://github.com/jeremyruppel/jquery.builder&#34; target=&#34;_blank&#34;&gt;Github page&lt;/a&gt;. Any question or suggestion are welcome.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Installing VimRepress in MacVim (OSX Lion)</title>
+      <link>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</link>
+      <pubDate>Tue, 07 Feb 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/</guid>
+      <description>&lt;p&gt;Installing &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;VimRepress&lt;/a&gt; should be trivial for almost every case but one exception is installing it in MacOSX Lion. If you installed MacVim compiling the source without specifying the architecture it will use the x86_64 (default for Lion) even if you are using &lt;a target=&#39;_blank&#39; href=&#39;http://mxcl.github.com/homebrew/&#39;&gt;homebrew&lt;/a&gt;.&lt;/p&gt;
+
+&lt;p&gt;The problem is, the python interpreter will not work correctly if you are using the 64 bits version, you need to recompile for the i386 architecture.&lt;/p&gt;
+
+&lt;p&gt;If you are not using any package manager you just need to pass the &lt;code&gt;--with-macarchs=i386&lt;/code&gt; to the configure script.&lt;/p&gt;
+
+&lt;p&gt;In the case of homebrew you need to change the formula with the command:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew edit macvim
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;With the formula open search for &lt;code&gt;--with-macarchs&lt;/code&gt; and set it to i386 (you will need a little Ruby knowledge).&lt;/p&gt;
+
+&lt;p&gt;Uninstall macvim:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew uninstall macvim
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And install it again:&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s important to use the system ruby version when using homebrew (the one that ships with MacOS). If you are using rvm set the current ruby to the system: &lt;code&gt;rvm use system&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #003333&#34;&gt;$ &lt;/span&gt;brew install macvim
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;If the install was successfully we are ready to &lt;a target=&#39;_blank&#39; href=&#39;http://www.vim.org/scripts/script.php?script_id=3510&#39;&gt;install and configure VimRepress&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Easyhash:  An easy interface to generate md5 and sha1 hash in hexadecimal format</title>
+      <link>http://poiati.github.io/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</link>
+      <pubDate>Sat, 31 Dec 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2011/12/31/easyhash--an-easy-interface-to-generate-md5-and-sha1-hash-in-hexadecimal-format/</guid>
+      <description>
+
+&lt;p&gt;Generate hash in hexadecimal format is a common need for most developers. Generally this is an easy task, but like a lot of stuff it&amp;rsquo;s complicated to do in Java. You need to use the &lt;code&gt;java.security.MessageDigest&lt;/code&gt; API and convert the result from bytes to a hexadecimal string.&lt;/p&gt;
+
+&lt;p&gt;Unfortunately, even in Groovy there is no easy path. With that in mind I developed a small library to do the work.&lt;/p&gt;
+
+&lt;h3 id=&#34;using-java:ebdc5789e452dc25141f2eaff1d6cd14&#34;&gt;Using Java&lt;/h3&gt;
+
+&lt;p&gt;First, Put the easyhash jar into the classpath and then:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;static&lt;/span&gt; com&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;lazythought&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;easyhash&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;HashGenerator&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.*;&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;ab07acbb1e496801937adfa772424bf7&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;equals&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;md5&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;foo bar baz&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;));&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;c7567e8b39e2428e38bf9c9226ac68de4c67dc39&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;equals&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;sha1&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;foo bar baz&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;));&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3 id=&#34;using-groovy:ebdc5789e452dc25141f2eaff1d6cd14&#34;&gt;Using Groovy&lt;/h3&gt;
+
+&lt;p&gt;With Groovy you can use the @Grab AST:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;com.lazythought:easyhash:1.0&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;static&lt;/span&gt; com&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;lazythought&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;easyhash&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;HashGenerator&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.*&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;ab07acbb1e496801937adfa772424bf7&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; md5&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;foo bar baz&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;c7567e8b39e2428e38bf9c9226ac68de4c67dc39&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; sha1&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;foo bar baz&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;There is also the HashCategory option:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.lazythought:easyhash:1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.lazythought.easyhash.HashCategory&lt;/span&gt;
+
+&lt;span style=&#34;color: #CC00FF&#34;&gt;use&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;HashCategory&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;b071ed8a2de56ecd5958305641a81755&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;frodo bags&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;md5&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;b6b5ece040fd0c467cb189a284c6e7c752c747f5&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;frodo bags&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;sha1&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;h3 id=&#34;dive-in:ebdc5789e452dc25141f2eaff1d6cd14&#34;&gt;Dive in&lt;/h3&gt;
+
+&lt;p&gt;It&amp;rsquo;s Available at Maven Central.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;com.lazythought&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;easyhash&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+    &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;1.0&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Source code &lt;a href=&#34;https://github.com/poiati/easyhash&#34; target=&#34;_blank&#34;&gt;&lt;a href=&#34;https://github.com/poiati/easyhash&#34;&gt;https://github.com/poiati/easyhash&lt;/a&gt;&lt;/a&gt;.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Grails / GORM: Changing default id name and type from an entity</title>
+      <link>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</link>
+      <pubDate>Tue, 04 Oct 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2011/10/04/grails-gorm-changing-default-id-name-and-type-from-an-entity/</guid>
+      <description>&lt;p&gt;While developing a simple application at work I got stuck with a common case in GORM, and I didn&amp;rsquo;t found the solution in the documentation.&lt;/p&gt;
+
+&lt;p&gt;I have a table with a column named &lt;code&gt;myid&lt;/code&gt; of type &lt;code&gt;varchar&lt;/code&gt;. But GORM by default auto generate an id property with the long
+type. The solution is straight forward, just call the method id in the
+&lt;code&gt;mapping&lt;/code&gt; closure, with the following param(s):&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Foo&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+
+    String myid
+
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;static&lt;/span&gt; constraints &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{}&lt;/span&gt;
+    
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;static&lt;/span&gt; mapping &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+        id &lt;span style=&#34;color: #9999FF&#34;&gt;generator:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;assigned&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;myid&amp;#39;&lt;/span&gt;
+    &lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;The generator is the strategy to auto-generate the id, you can use a
+sequence or something like, since it&amp;rsquo;s a string the value will be
+assigned, not generated. The name is the current property to bind the
+value (&lt;code&gt;myid&lt;/code&gt; in this case).&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Groovy / GMongo tips and tricks</title>
+      <link>http://poiati.github.io/2011/01/29/groovy-/-gmongo-tips-and-tricks/</link>
+      <pubDate>Sat, 29 Jan 2011 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2011/01/29/groovy-/-gmongo-tips-and-tricks/</guid>
+      <description>
+
+&lt;p&gt;Based on some emails I received last days I will show some features of GMongo that not everyone is aware.&lt;/p&gt;
+
+&lt;h2 id=&#34;regex-based-search:9779d8ac54173b508163e11ca261d1b7&#34;&gt;Regex based search&lt;/h2&gt;
+
+&lt;p&gt;In the mongo official Java driver you can do searches using Regular Expression. To do that you just need to pass a java.util.regex.Pattern instance as the search term. In Groovy there is a shortcut to create a Pattern: &lt;code&gt;~/regex/&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;For example:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; pattern &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;~&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;/mypattern/&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; pattern&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;class&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;is&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;java&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;util&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;regex&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;Pattern&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Here is a small script demonstrating the usage of regex search:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo:gmongo:1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.gmongo.GMongo&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; gmongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; GMongo&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;localhost:27017&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; db &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; gmongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;getDB&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;tips&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;drop&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Windows XP&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Windows 7&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Windows Vista&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Mac OS X v10.3 &amp;quot;Panther&amp;quot;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Mac OS X v10.4 &amp;quot;Tiger&amp;quot;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Mac OS X v10.5 &amp;quot;Leopard&amp;quot;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Mac OS X v10.6 &amp;quot;Snow Leopard&amp;quot;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Mac OS X v10.7 &amp;quot;Lion&amp;quot;&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Mac OS Only&lt;/span&gt;
+println &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;\nMac Os Only\n&amp;quot;&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;find&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;~&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;/^Mac/&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]).&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;each&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt; so &lt;span style=&#34;color: #555555&#34;&gt;-&amp;gt;&lt;/span&gt;
+    println so
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Print: &lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Mac OS Leopard, Snow Leopard&lt;/span&gt;
+println &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;\nMac OS Leopard, Snow Leopard\n&amp;quot;&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;so&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;find&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;~&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;/Leopard/&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]).&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;each&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt; so &lt;span style=&#34;color: #555555&#34;&gt;-&amp;gt;&lt;/span&gt;
+    println so
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h2 id=&#34;persisting-your-pogo:9779d8ac54173b508163e11ca261d1b7&#34;&gt;Persisting your POGO&lt;/h2&gt;
+
+&lt;p&gt;There is an easy way to persist your POGO using GMongo. Suppose we have the class:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Person&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; name
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; age
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;In Groovy we can get all properties from a class using the &lt;code&gt;properties&lt;/code&gt; property, for example:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; person &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; Person&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Paulo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;age:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+println person&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;properties&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;This code outputs something like:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;
+  &lt;span style=&#34;color: #9999FF&#34;&gt;class:&lt;/span&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Person&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; 
+  &lt;span style=&#34;color: #9999FF&#34;&gt;age:&lt;/span&gt;&lt;span style=&#34;color: #FF6600&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; 
+  &lt;span style=&#34;color: #9999FF&#34;&gt;metaClass:&lt;/span&gt;org&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;codehaus&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;groovy&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;runtime&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;HandleMetaClass&lt;/span&gt;&lt;span style=&#34;color: #AA0000; background-color: #FFAAAA&#34;&gt;@&lt;/span&gt;&lt;span style=&#34;color: #FF6600&#34;&gt;450&lt;/span&gt;a1001&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; 
+  &lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt;Paulo
+&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;As you can see, not every property means something to us. We doesn&amp;rsquo;t want to store &lt;code&gt;class&lt;/code&gt; and &lt;code&gt;metaClass&lt;/code&gt; in our storage, because it isn&amp;rsquo;t part of the domain. So, we need to ignore them:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;println person&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;properties&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findAll&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;![&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;class&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;metaClass&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;].&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;contains&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;it&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;key&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now, all we need to do is persist this Map in MongoDB. Here is a complete example:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo:gmongo:1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.gmongo.GMongo&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Person&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; name
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; age
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; gmongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; GMongo&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;localhost:27017&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; db &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; gmongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;getDB&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;example&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; person &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; Person&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Paulo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;age:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;persons&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;drop&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;persons&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; person&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;properties&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findAll&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;![&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;class&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;metaClass&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;].&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;contains&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;it&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;key&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; personFromMongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;persons&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Paulo&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; personFromMongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;name&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;25&lt;/span&gt;      &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; personFromMongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;age&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;h2 id=&#34;basicdbobject-to-pogo-conversion:9779d8ac54173b508163e11ca261d1b7&#34;&gt;BasicDBObject to POGO conversion&lt;/h2&gt;
+
+&lt;p&gt;The class com.mongodb.BasicDBObjects extends java.util.LinkedHashMap so it&amp;rsquo;s easy to convert it to POGO, thankfully to Groovy array notation constructor call. Don&amp;rsquo;t worry, I will explain. Suppose we have the class:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Person&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; name
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; age
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The two statements bellow are equivalent:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;Person mike &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; Person&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Mike&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;age:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;23&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+Person john &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;John&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;age:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;36&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;To this work you need to use typed variable. If you use untyped variable definition Groovy can&amp;rsquo;t infer what constructor to call.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;So, taking advantage of this cool Groovy feature you can do things like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo:gmongo:1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.gmongo.GMongo&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Person&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; name
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; age
+   
+   &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;whoIAm&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+       &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;Hello, I&amp;#39;m $name and I am $age years old.&amp;quot;&lt;/span&gt;
+   &lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; gmongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; GMongo&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;localhost:27017&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; db &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; gmongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;getDB&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;example&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; person &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; Person&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Paulo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;age:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;25&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;persons&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;drop&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;persons&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; person&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;properties&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findAll&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;![&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;class&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;metaClass&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;].&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;contains&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;it&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;key&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+
+Person personFromMongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;persons&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;().&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findAll&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt; it&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;key&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;!=&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;_id&amp;#39;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;Hello, I&amp;#39;m Paulo and I am 25 years old.&amp;quot;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; personFromMongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;whoIAm&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;As you can see, we need to remove the &lt;code&gt;_id&lt;/code&gt; property from the Map before instantiate the class Person, that is because Person hasn&amp;rsquo;t this property. Another alternative is add the &lt;code&gt;_id&lt;/code&gt; property to the Person class.&lt;/p&gt;
+
+&lt;p&gt;Any feedback is appreciated.&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>GMongo available at Maven Central</title>
+      <link>http://poiati.github.io/2010/07/03/gmongo-available-at-maven-central/</link>
+      <pubDate>Sat, 03 Jul 2010 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2010/07/03/gmongo-available-at-maven-central/</guid>
+      <description>&lt;p&gt;A maintenance release (0.5.1) of &lt;a href=&#34;http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/&#34;&gt;GMongo&lt;/a&gt; was launched. It just fixed a bug with com.mongodb.DB#createCollection.&lt;/p&gt;
+
+&lt;p&gt;But the good news is the &lt;a href=&#34;http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/&#34;&gt;GMongo&lt;/a&gt; availability in the Maven Central (&lt;a href=&#34;http://repo2.maven.org/maven2/&#34;&gt;http://repo2.maven.org/maven2/&lt;/a&gt;).&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Maven&lt;/strong&gt;&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;dependency&amp;gt;&lt;/span&gt;
+      &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;groupId&amp;gt;&lt;/span&gt;com.gmongo&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/groupId&amp;gt;&lt;/span&gt;
+      &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;artifactId&amp;gt;&lt;/span&gt;gmongo&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/artifactId&amp;gt;&lt;/span&gt;
+      &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;version&amp;gt;&lt;/span&gt;0.5.1&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/version&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;/dependency&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;strong&gt;Ivy&lt;/strong&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;&amp;lt;dependency&lt;/span&gt; &lt;span style=&#34;color: #330099&#34;&gt;org=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;com.gmongo&amp;quot;&lt;/span&gt; &lt;span style=&#34;color: #330099&#34;&gt;name=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;gmongo&amp;quot;&lt;/span&gt; &lt;span style=&#34;color: #330099&#34;&gt;rev=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;0.5.1&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;/&amp;gt;&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;strong&gt;Groovy Grape&lt;/strong&gt;
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;group&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; module&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; version&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;0.5.1&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;This should compile and run seamlessly in an environment with Groovy 1.7.2 (or later):&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Grab the jar&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;group&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; module&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; version&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;0.5.1&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.gmongo.GMongo&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; mongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; GMongo&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;127.0.0.1&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;27017&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; db &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; mongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;getDB&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;myDb&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;greetings&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;insert&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;hello:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;world&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>GMongo 0.5 Released</title>
+      <link>http://poiati.github.io/2010/06/20/gmongo-0.5-released/</link>
+      <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2010/06/20/gmongo-0.5-released/</guid>
+      <description>&lt;blockquote&gt;
+&lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt; GMongo is in constantly development, for more details check &lt;a href=&#39;https://github.com/poiati/gmongo&#39;&gt;&lt;a href=&#34;https://github.com/poiati/gmongo&#34;&gt;https://github.com/poiati/gmongo&lt;/a&gt;&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;GMongo is an alternative to de default Java driver for &lt;a href=&#34;http://www.mongodb.org/&#34;&gt;Mongodb&lt;/a&gt;. It&amp;rsquo;s use an easy and less verbose syntax, the grammar is very close to the official mongo shell cliente (javascript).&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s just a wrapper around the Java driver. So, every single method of the the official driver is available here too.&lt;/p&gt;
+
+&lt;p&gt;The main class is the com.gmongo.GMongo. It has the same API of the com.mongodb.Mongo but it&amp;rsquo;s not a subclass. Instead, the methods calls are delegated. Despite GMongo, all other classes are the same from the Java driver.&lt;/p&gt;
+
+&lt;p&gt;To be more practical, here are some examples:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// To download GMongo on the fly and put it at classpath&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;group&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; module&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; version&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.gmongo.GMongo&lt;/span&gt;
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Instantiate a com.gmongo.GMongo object instead of com.mongodb.Mongo&lt;/span&gt;
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// The same constructors and methods are available here&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; mongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; GMongo&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;127.0.0.1&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;27017&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Get a db reference in the old fashion way&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; db &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; mongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;getDB&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;gmongo&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Collections can be accessed as a db property (like the javascript API)&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;myCollection&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;instanceof&lt;/span&gt; com&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mongodb&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;DBCollection&lt;/span&gt;
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// They also can be accessed with array notation &lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;my.collection&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;instanceof&lt;/span&gt; com&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mongodb&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;DBCollection&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Insert a document&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;insert&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Groovy&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;])&lt;/span&gt;
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// A less verbose way to do it&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;insert&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Ruby&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Yet another way&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Python&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Insert a list of documents&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Javascript&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;],&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Ioke&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]]&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; statics &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Java&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;C&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;VB&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+
+statics&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;each&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+	db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; it&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;static&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Finding the first document&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; lang &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; lang&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;name&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Groovy&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Set a new property&lt;/span&gt;
+lang&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;site&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;http://groovy.codehaus.org/&amp;#39;&lt;/span&gt;
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Save the new version&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;save&lt;/span&gt; lang
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Groovy&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;).&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;site&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;http://groovy.codehaus.org/&amp;#39;&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Counting the number of documents in the collection&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;find&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;static&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;).&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;3&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Another way to count&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;2&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Updating a document using the &amp;#39;$set&amp;#39; operator&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;update&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Python&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;],&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;$set&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;paradigms:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;object-oriented&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;functional&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;imperative&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]]])&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;3&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Python&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;).&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;paradigms&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;size&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Using upsert&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;update&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Haskel&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;],&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;$set&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;paradigms:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;functional&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]]],&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;true&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Haskel&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Removing some documents&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;remove&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Removing all documents&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;remove&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([:])&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// To ensure complete consistency in a session use DB#inRequest&lt;/span&gt;
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// It is analogous to user DB#requestStarted and DB#requestDone&lt;/span&gt;
+db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;inRequest&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
+	db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;insert&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Objective-C&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+	&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Objective-C&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;And a simple MapReduce:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// To download GMongo on the fly and put it at classpath&lt;/span&gt;
+&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;group&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; module&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; version&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.gmongo.GMongo&lt;/span&gt;
+
+&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// There is some bug using the [Random] word into codesnipt plugin&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;java.util.Random&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;as&lt;/span&gt; Rand
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; mongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; GMongo&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;127.0.0.1&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;27017&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; db &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; mongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;getDB&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;gmongo&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; words &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;baz&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; rand  &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; Rand&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;		
+
+&lt;span style=&#34;color: #FF6600&#34;&gt;1000&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;times&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt; 
+	db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;words&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;word:&lt;/span&gt; words&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;rand&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;nextInt&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #FF6600&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)]]&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;words&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;1000&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; result &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;words&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mapReduce&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;
+	&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;	function map() {&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;		emit(this.word, {count: 1})&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;	}&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;	&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt;
+	&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;	function reduce(key, values) {&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;		var count = 0&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;		for (var i = 0; i &amp;lt; values.length; i++)&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;			count += values[i].count&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;		return {count: count}&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;	}&lt;/span&gt;
+&lt;span style=&#34;color: #CC3300&#34;&gt;	&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt;
+	&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;mrresult&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt;
+	&lt;span style=&#34;color: #555555&#34;&gt;[:]&lt;/span&gt; &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// No Query&lt;/span&gt;
+&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mrresult&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;3&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mrresult&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;find&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()*.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;value&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;*.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;sum&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;1000&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;It&amp;rsquo;s a stable version and still a work in progress. The only dependency is the mongo Java driver version 2.0 and, of course, Groovy. It&amp;rsquo;s tested under Groovy 1.7.2 and 1.7.3. It&amp;rsquo;s opensource and hosted at &lt;a href=&#34;http://github.com/poiati/gmongo&#34;&gt;http://github.com/poiati/gmongo&lt;/a&gt;.&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The binaries can be found at &lt;a href=&#34;http://repo1.maven.org/maven2/com/gmongo/gmongo/&#34;&gt;Maven Central&lt;/a&gt;.
+&lt;a href=&#34;http://blog.paulopoiati.com/2010/07/03/gmongo-available-at-maven-central/&#34;&gt;Click here for more details&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Any bug, suggestion or issue please contact me.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

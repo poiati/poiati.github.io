@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/c/</link>
+    <description>Recent content in C on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 05 Dec 2009 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/c/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Forwarding Objective-C Messages</title>
+      <link>http://poiati.github.io/2009/12/05/forwarding-objective-c-messages/</link>
+      <pubDate>Sat, 05 Dec 2009 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2009/12/05/forwarding-objective-c-messages/</guid>
+      <description>&lt;p&gt;Unlike Java or plain C, Objective-C work with messages. You don&amp;rsquo;t invoke a method on an object, instead, you send a message to it (like the Ruby language). This approach let a more dynamic behavior. For instance, suppose that you have this class:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// SomeClass&lt;/span&gt;
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;lt;Cocoa/Cocoa.h&amp;gt;&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@interface&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;SomeClass&lt;/span&gt; : &lt;span style=&#34;color: #336666&#34;&gt;NSObject&lt;/span&gt; {
+}
+
+-(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;void&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;doSomething&lt;/span&gt;
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@end&lt;/span&gt;
+
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;quot;SomeClass.h&amp;quot;&lt;/span&gt;
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;quot;Delegate.h&amp;quot;&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@implementation&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;SomeClass&lt;/span&gt;
+
+-(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;void&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;doSomething&lt;/span&gt; {
+   NSLog(&lt;span style=&#34;color: #CC3300&#34;&gt;@&amp;quot;doSomething was called on %@&amp;quot;&lt;/span&gt;, [&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt; className]);
+}
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;As you can see it has only one instance method definition, called
+&lt;code&gt;doSomething&lt;/code&gt;. Thus, it can respond to the &lt;code&gt;doSomething&lt;/code&gt; message. But, what happens when we send a message that the &lt;code&gt;receiver&lt;/code&gt; can&amp;rsquo;t respond to ? Lets make a try:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The &lt;code&gt;receiver&lt;/code&gt; is the object that will receive the message. For example, in the statement: &lt;code&gt;[dog bark]&lt;/code&gt; &lt;code&gt;dog&lt;/code&gt; is the receiver and &lt;code&gt;bark&lt;/code&gt; is the message.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Here is our main code:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// MethodMissing&lt;/span&gt;
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;lt;Foundation/Foundation.h&amp;gt;&lt;/span&gt;
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;quot;SomeClass.h&amp;quot;&lt;/span&gt;
+
+&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;int&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;main&lt;/span&gt; (&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;int&lt;/span&gt; argc, &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;const&lt;/span&gt; &lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;char&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;*&lt;/span&gt; argv[]) {
+  &lt;span style=&#34;color: #336666&#34;&gt;NSAutoreleasePool&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;*&lt;/span&gt;pool &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color: #336666&#34;&gt;NSAutoreleasePool&lt;/span&gt; new];
+  SomeClass &lt;span style=&#34;color: #555555&#34;&gt;*&lt;/span&gt;someClass &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; [SomeClass new];
+  [someClass doSomething];
+  [someClass doSomethingElse];
+  [pool drain];
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;0&lt;/span&gt;;
+}
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;This code compiles with warnings, because the message &amp;ldquo;doSomethingElse&amp;rdquo; is not defined in the SomeClass interface. Errors in the Objective-C message dispatch system occurs at runtime. Programmers need to be more careful when dealing with more dynamic languages.&lt;/p&gt;
+
+&lt;p&gt;Running the code we got the following result:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;MethodMissing[1695:a0f] doSomething was called on SomeClass
+MethodMissing[1695:a0f] -[SomeClass doSomethingElse]: unrecognized selector sent to instance 0x10010c6c0
+MethodMissing[1695:a0f] *** Terminating app due to uncaught exception &amp;#39;NSInvalidArgumentException&amp;#39;,
+reason: &amp;#39;-[SomeClass doSomethingElse]: unrecognized selector sent to instance 0x10010c6c0&amp;#39;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;Not surprisingly the program crashed. First it invoke our declared
+&lt;code&gt;doSomething&lt;/code&gt; message and logged the message to the console, all ok
+until now. But in line eight we got a NSInvalidArgumentException with
+the error &lt;code&gt;-[SomeClass doSomethingElse]: unrecognized selector sent to instance 0x10010c6c0&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;This error message is very readable, the problem is that, there isn&amp;rsquo;t any message that respond to &lt;code&gt;doSomethingElse&lt;/code&gt; in class &lt;code&gt;SomeClass&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;And we got to the key topic of this post. We can handle unrecognized selectors messages and do a special treatment when it arrive to the receiver. How we do that ?&lt;/p&gt;
+
+&lt;p&gt;We need to overwrite two methods from the NSObject class in the &lt;code&gt;receiver&lt;/code&gt; class:
+    &lt;code&gt;-(void)forwardInvocation:(NSInvocation *)invocation&lt;/code&gt;
+    &lt;code&gt;-(NSMethodSignature*)methodSignatureForSelector:(SEL)selector&lt;/code&gt;&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;An &lt;code&gt;NSInvocation&lt;/code&gt; is an Objective-C message rendered static, that is, it is an action turned into an object. &lt;code&gt;NSInvocation&lt;/code&gt; objects are used to store and forward messages between objects and between applications.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;Now our classes looks like this:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// ForwardClass&lt;/span&gt;
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;lt;Cocoa/Cocoa.h&amp;gt;&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@interface&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;ForwardClass&lt;/span&gt; : &lt;span style=&#34;color: #336666&#34;&gt;NSObject&lt;/span&gt; {
+}
+
+-(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;void&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;doSomethingElse&lt;/span&gt;;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@end&lt;/span&gt;
+
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;quot;ForwardClass.h&amp;quot;&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@implementation&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;ForwardClass&lt;/span&gt;	
+
+-(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;void&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;doSomethingElse&lt;/span&gt; {
+	NSLog(&lt;span style=&#34;color: #CC3300&#34;&gt;@&amp;quot;doSomething was called on %@&amp;quot;&lt;/span&gt;, [&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt; className]);
+}
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// SomeClass&lt;/span&gt;
+
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;lt;Cocoa/Cocoa.h&amp;gt;&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@interface&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;SomeClass&lt;/span&gt; : &lt;span style=&#34;color: #336666&#34;&gt;NSObject&lt;/span&gt; {
+	&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;id&lt;/span&gt; forwardClass;
+}
+
+-(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;void&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;doSomething&lt;/span&gt;;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@end&lt;/span&gt;
+
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;quot;SomeClass.h&amp;quot;&lt;/span&gt;
+&lt;span style=&#34;color: #009999&#34;&gt;#import &amp;quot;ForwardClass.h&amp;quot;&lt;/span&gt;
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@implementation&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;SomeClass&lt;/span&gt;
+
+-(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;id&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;init&lt;/span&gt; {
+	&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color: #336666&#34;&gt;super&lt;/span&gt; init]) {
+		forwardClass &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; [ForwardClass new];
+	}
+	&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;;
+}
+
+-(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;void&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;doSomething&lt;/span&gt; {
+	NSLog(&lt;span style=&#34;color: #CC3300&#34;&gt;@&amp;quot;doSomething was called on %@&amp;quot;&lt;/span&gt;, [&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt; className]);
+}
+
+-(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;void&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;forwardInvocation:&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;NSInvocation&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color: #003333&#34;&gt;invocation&lt;/span&gt; {
+	&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color: #555555&#34;&gt;!&lt;/span&gt; forwardClass) {
+		[&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;doesNotRecognizeSelector&lt;/span&gt;: [invocation selector]];
+	}
+	[invocation &lt;span style=&#34;color: #9999FF&#34;&gt;invokeWithTarget&lt;/span&gt;: forwardClass];
+}
+
+-(&lt;span style=&#34;color: #336666&#34;&gt;NSMethodSignature&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;*&lt;/span&gt;)&lt;span style=&#34;color: #CC00FF&#34;&gt;methodSignatureForSelector:&lt;/span&gt;(&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;SEL&lt;/span&gt;)&lt;span style=&#34;color: #003333&#34;&gt;selector&lt;/span&gt; {
+	&lt;span style=&#34;color: #336666&#34;&gt;NSMethodSignature&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;*&lt;/span&gt;signature &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; [&lt;span style=&#34;color: #336666&#34;&gt;super&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;methodSignatureForSelector&lt;/span&gt;:selector];
+	&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;if&lt;/span&gt; (&lt;span style=&#34;color: #555555&#34;&gt;!&lt;/span&gt; signature) {
+		signature &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; [forwardClass &lt;span style=&#34;color: #9999FF&#34;&gt;methodSignatureForSelector&lt;/span&gt;:selector];
+	}
+	&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; signature;
+}
+
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;@end&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;When an object receive a message it doesn&amp;rsquo;t recognize, it wraps the invocation in a NSInvocation object and call the &lt;code&gt;-(void)forwardInvocation&lt;/code&gt; passing it as parameter. But, first, it call the &lt;code&gt;-(NSMethodSignature*)methodSignatureForSelector&lt;/code&gt; to get the method signature for the given selector.&lt;/p&gt;
+
+&lt;p&gt;Now, running the same program again we got:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;MethodMissing[523:a0f] doSomething was called on SomeClass
+MethodMissing[523:a0f] doSomethingElse was called on ForwardClass
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;And the program finished without any problems.&lt;/p&gt;
+
+&lt;p&gt;There are a lot of uses for this technic, some examples are:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;&lt;p&gt;Wrap one object in a logger object that intercepts and records the invocation of interesting messages.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Implement &lt;em&gt;synthetic&lt;/em&gt; messages that are handled by other methods in
+your class. Imagine creating a generic database record object that
+catches any property message it receives (i.e., &lt;code&gt;-saleDate&lt;/code&gt;,
+&lt;code&gt;-setSaleDate:&lt;/code&gt;) and automatically translates it into a record query.
+Instead of coding &lt;code&gt;date = [record getDateFieldWithKey:@&amp;quot;SaleDate&amp;quot;]&lt;/code&gt;, you
+could simply write &lt;code&gt;date = [record saleDate]&lt;/code&gt;, without ever writing a
+&lt;code&gt;-saleDate&lt;/code&gt; method. &lt;code&gt;NSManagedObject&lt;/code&gt; and &lt;code&gt;CALayer&lt;/code&gt; are examples of classes that implement synthetic properties.&lt;/p&gt;&lt;/li&gt;
+
+&lt;li&gt;&lt;p&gt;Create an object that forwards the message to a hierarchy of other objects, like a responder chain. The proxy object would search a collection of other objects looking for one that implements the message&lt;/p&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;In a future post I will demonstrate one real world application of this.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

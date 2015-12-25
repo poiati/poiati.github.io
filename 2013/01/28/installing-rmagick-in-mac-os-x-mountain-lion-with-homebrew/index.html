@@ -1,0 +1,271 @@
+    <!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Paulo Poiati">
+		<meta name="description" content="">
+		<meta name="generator" content="Hugo 0.15" />
+		<title>Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<link rel="shortcut icon" href="http://poiati.github.io/images/favicon.ico">
+		<link rel="stylesheet" href="http://poiati.github.io/css/style.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/highlight.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/monosocialiconsfont.css">
+		
+		<link href="http://poiati.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Paulo Poiati | Full Stack Web Developer" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='http://poiati.github.io/'> <span class="arrow">←</span>Home</a>
+	
+
+	
+		<a href='http://poiati.github.io/about'>About</a>
+	
+
+	
+	<a class="cta" href="http://poiati.github.io/index.xml">Subscribe</a>
+	
+</nav>
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew</h1>
+                    <h2 class="headline">January 28, 2013</h2>
+                </header>
+                <section id="post-body">
+                    <p>Installing <a href="https://github.com/rmagick/rmagic">RMagick</a> with homebrew should be
+trivial, but it&rsquo;s not. For some reason the last version of RMagick
+<code>(2.13.1)</code> does not compile with the last version of
+<a href="http://www.imagemagick.org/script/index.php">ImageMagick</a> <code>(6.8.2-0)</code>.</p>
+
+<p>If you install the last version of ImageMagick with homebrew it will
+work without problems but the RMagick extension will fail during the
+build with the following error:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">checking for ImageMagick version &gt;= 6.4.9... yes
+checking for HDRI disabled version of ImageMagick... yes
+checking for stdint.h... yes
+checking for sys/types.h... yes
+checking for wand/MagickWand.h... yes
+checking for InitializeMagick() in -lMagickCore... no
+checking for InitializeMagick() in -lMagick... no
+checking for InitializeMagick() in -lMagick++... no
+Can&#39;t install RMagick 2.13.1. Can&#39;t find the ImageMagick library or one
+of the dependent libraries. Check the mkmf.log file for more detailed
+information.
+</pre></div>
+
+
+<p>I&rsquo;m not sure but I think there are some compatibility problems with the
+new versions of ImageMagick and RMagick. One version I know works well
+is <code>6.6.7-0</code> let&rsquo;s install it using homebrew.</p>
+
+<p>If you already have ImageMagick installed uninstall it before continue.</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>brew uninstall imagemagick
+</pre></div>
+</p>
+
+<p>Now let&rsquo;s edit the brew formula.</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>brew edit imagemagick
+</pre></div>
+</p>
+
+<p>You should set the <code>url</code> to
+<code>ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/ImageMagick-6.6.7-0.tar.gz</code>
+and comment the <code>sha256</code> line.</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #006699; font-weight: bold">class</span> <span style="color: #00AA88; font-weight: bold">Imagemagick</span> <span style="color: #555555">&lt;</span> <span style="color: #336600">Formula</span>
+  homepage <span style="color: #CC3300">&#39;http://www.imagemagick.org&#39;</span>
+
+  <span style="color: #0099FF; font-style: italic"># upstream&#39;s stable tarballs tend to disappear, so we provide our own mirror</span>
+  <span style="color: #0099FF; font-style: italic"># Tarball from: http://www.imagemagick.org/download/ImageMagick.tar.gz</span>
+  <span style="color: #0099FF; font-style: italic"># SHA-256 from: http://www.imagemagick.org/download/digest.rdf</span>
+ 
+  <span style="color: #0099FF; font-style: italic"># Remove this url</span>
+  <span style="color: #0099FF; font-style: italic"># url &#39;http://downloads.sf.net/project/machomebrew/mirror/ImageMagick-6.8.0-10.tar.gz&#39;</span>
+ 
+  <span style="color: #0099FF; font-style: italic"># Add this new url</span>
+  url <span style="color: #CC3300">&#39;ftp://ftp.sunet.se/pub/multimedia/graphics/ImageMagick/ImageMagick-6.6.7-0.tar.gz&#39;</span>
+
+  <span style="color: #0099FF; font-style: italic"># Comment this line</span>
+  <span style="color: #0099FF; font-style: italic"># sha256 &#39;b3dfcb44300f73e73ffa8deef8bba4cf43f03d7150bf1fd0febedceac1a45c7e&#39;</span>
+
+  head <span style="color: #CC3300">&#39;https://www.imagemagick.org/subversion/ImageMagick/trunk&#39;</span>,
+    <span style="color: #FFCC33">:using</span> <span style="color: #555555">=&gt;</span> <span style="color: #336600">UnsafeSubversionDownloadStrategy</span>
+
+  <span style="color: #555555">.</span>
+  <span style="color: #555555">.</span>
+  <span style="color: #555555">.</span>
+<span style="color: #006699; font-weight: bold">end</span>
+</pre></div>
+</p>
+
+<p>After saving the file you can install ImageMagick. You should also disable
+openmp and build it from source.</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>brew install imagemagick --disable-openmp --build-from-source
+</pre></div>
+</p>
+
+<p>Now the RMagick installation should work like a charm!</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%"><span style="color: #003333">$ </span>gem install rmagick
+</pre></div>
+</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/poiati">
+                        <img class="avatar" src="http://poiati.github.io/images/avatar.png">
+                        <div>
+                            <span class="dark">Paulo Poiati</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fpoiati.github.io%2f2013%2f01%2f28%2finstalling-rmagick-in-mac-os-x-mountain-lion-with-homebrew%2f - Installing%20RMagick%20in%20Mac%20OS%20X%20Mountain%20Lion%20%2f%20Maverick%20with%20Homebrew by @poiati"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'poiati';
+    var disqus_identifier = 'http:\/\/poiati.github.io\/2013\/01\/28\/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew\/';
+    var disqus_title = 'Installing RMagick in Mac OS X Mountain Lion \/ Maverick with Homebrew';
+    var disqus_url = 'http:\/\/poiati.github.io\/2013\/01\/28\/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/">How do I Configure Environment Variables in Ansible<aside class="dates">Mar 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/">Copying content from vim to Mac OS clipboard<aside class="dates">May 27</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/10/31/django-outbox-released/">Django Outbox Released<aside class="dates">Oct 31</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/">Running Cron In Elastic Beanstalk Auto-Scaling Environment<aside class="dates">Aug 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/">Flask flash messages testing<aside class="dates">Feb 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/">Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew<aside class="dates">Jan 28</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/">Browsing between most recent buffers in VIM<aside class="dates">Jun 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/">A not well known and often over looked css property: box-sizing<aside class="dates">May 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/16/jquery-builder-introduction/">jQuery Builder: Introduction<aside class="dates">Feb 16</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/">Installing VimRepress in MacVim (OSX Lion)<aside class="dates">Feb 7</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        
+<div id="social">
+    
+    <a class="symbol" href="https://www.github.com/poiati">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/poiati">
+        twitterbird
+    </a>
+    
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2015 Paulo Poiati
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://poiati.github.io/js/main.js"></script>
+<script src="http://poiati.github.io/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+    </body>
+</html>

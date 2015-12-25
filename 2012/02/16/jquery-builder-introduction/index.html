@@ -1,0 +1,333 @@
+    <!DOCTYPE html>
+<html lang="en-us">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="author" content="Paulo Poiati">
+		<meta name="description" content="">
+		<meta name="generator" content="Hugo 0.15" />
+		<title>jQuery Builder: Introduction &middot; Paulo Poiati | Full Stack Web Developer</title>
+		<link rel="shortcut icon" href="http://poiati.github.io/images/favicon.ico">
+		<link rel="stylesheet" href="http://poiati.github.io/css/style.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/highlight.css">
+		<link rel="stylesheet" href="http://poiati.github.io/css/monosocialiconsfont.css">
+		
+		<link href="http://poiati.github.io/index.xml" rel="alternate" type="application/rss+xml" title="Paulo Poiati | Full Stack Web Developer" />
+		
+	</head>
+
+    <body>
+       <nav class="main-nav">
+	
+	
+		<a href='http://poiati.github.io/'> <span class="arrow">←</span>Home</a>
+	
+
+	
+		<a href='http://poiati.github.io/about'>About</a>
+	
+
+	
+	<a class="cta" href="http://poiati.github.io/index.xml">Subscribe</a>
+	
+</nav>
+
+        <section id="wrapper">
+            <article class="post">
+                <header>
+                    <h1>jQuery Builder: Introduction</h1>
+                    <h2 class="headline">February 16, 2012</h2>
+                </header>
+                <section id="post-body">
+                    
+
+<h2 id="overview:5c3045aa838b92fa2843399a7c7ab350">Overview</h2>
+
+<p>Which web developer never built DOM elements programmatically? It’s a
+mess, doesn’t is?</p>
+
+<p>Well, it was a lot worse in the past. When the only way to do that was appending strings or with the standard Document Api (<code>Document#createElement</code>, <code>Document#appendChild</code> &hellip;). But In the past few years the things got better. Javascript Frameworks emerged and one of the them was the well know jQuery.</p>
+
+<p>jQuery has a smarter API to build DOM elements. The main advantage of using jQuery is the <a href="http://en.wikipedia.org/wiki/Method_chaining">method chaining</a>. But is out there a better approach ? I was seeking for one and I found just a few projects, one of them was <a href="https://github.com/jeremyruppel/jquery.builder">jquery.builder</a> from Jeremy Ruppel, a new but promising project. One week later I was helping her to evolve it.</p>
+
+<h2 id="usage:5c3045aa838b92fa2843399a7c7ab350">Usage</h2>
+
+<p>To start building, use the <code>build</code> method. You can give this build method a block.</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( )
+{
+  <span style="color: #006699; font-weight: bold">this</span>.div( <span style="color: #CC3300">&#39;hello!&#39;</span> );
+} );
+
+$( <span style="color: #CC3300">&#39;#context&#39;</span> ).html( ); <span style="color: #0099FF; font-style: italic">// =  &lt;div&gt;hello!&lt;/div&gt;</span>
+</pre></div>
+
+
+<p>In this block and any child blocks, <code>this</code> refers to the builder instance. The same builder instance will also be passed to the block if you want to name the reference.</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( b )
+{
+  b.div( <span style="color: #CC3300">&#39;hello!&#39;</span> );
+} );
+</pre></div>
+
+
+<p>The builder object has a method for every common html tag, but you can add your own tag methods easily (more on that later).</p>
+
+<p>For building node hierarchies, you can give any tag method a block and the builder will adjust its scope appropriately:</p>
+
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( )
+{
+  <span style="color: #006699; font-weight: bold">this</span>.div( <span style="color: #006699; font-weight: bold">function</span>( )
+  {
+    <span style="color: #006699; font-weight: bold">this</span>.div( <span style="color: #CC3300">&#39;nested&#39;</span> );
+  } );
+
+  <span style="color: #006699; font-weight: bold">this</span>.span( <span style="color: #006699; font-weight: bold">function</span>( )
+  {
+    <span style="color: #006699; font-weight: bold">this</span>.a( <span style="color: #CC3300">&#39;hierarchy&#39;</span> );
+  } );
+} );
+
+$( <span style="color: #CC3300">&#39;#context&#39;</span> ).html( ); <span style="color: #0099FF; font-style: italic">// =&gt; &lt;div&gt;&lt;div&gt;nested&lt;/div&gt;&lt;/div&gt;&lt;span&gt;&lt;a&gt;hierarchy&lt;/a&gt;&lt;/span&gt;</span>
+</pre></div>
+
+
+<p>Scope can be nested as deeply as you want. Go crazy.</p>
+
+<p>You can pass a hash of options to any tag method and those key-value pairs will be added as attributes to the created node.</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( )
+{
+  <span style="color: #006699; font-weight: bold">this</span>.a( { href <span style="color: #555555">:</span> <span style="color: #CC3300">&#39;github.com&#39;</span> } );
+} );
+
+$( <span style="color: #CC3300">&#39;#context&#39;</span> ).html( ); <span style="color: #0099FF; font-style: italic">// =&gt; &lt;a href=&quot;github.com&quot;&gt;&lt;/a&gt;</span>
+</pre></div>
+</p>
+
+<p>The options hash may also be passed after the node text, like:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( )
+{
+  <span style="color: #006699; font-weight: bold">this</span>.a( <span style="color: #CC3300">&#39;github rules&#39;</span>, { href <span style="color: #555555">:</span> <span style="color: #CC3300">&#39;github.com&#39;</span> } );
+} );
+
+$( <span style="color: #CC3300">&#39;#context&#39;</span> ).html( ); <span style="color: #0099FF; font-style: italic">// =&gt; &lt;a href=&quot;github.com&quot;&gt;github rules&lt;/a&gt;</span>
+</pre></div>
+</p>
+
+<p>If you need the reference to the current scope DOM element you can use the $ variable. For Example, to add a mouse click event to an element:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( )
+{
+  <span style="color: #006699; font-weight: bold">this</span>.span(<span style="color: #006699; font-weight: bold">function</span> ( )
+  {
+    <span style="color: #006699; font-weight: bold">this</span>.text( <span style="color: #CC3300">&#39;Click Me&#39;</span> );
+    <span style="color: #006699; font-weight: bold">this</span>.$.click(<span style="color: #006699; font-weight: bold">function</span>( )
+    {
+      alert( <span style="color: #CC3300">&#39;Hello There!&#39;</span> );
+    } );
+  } );
+} );
+</pre></div>
+</p>
+
+<h2 id="custom-tags:5c3045aa838b92fa2843399a7c7ab350">Custom Tags</h2>
+
+<p>If you&rsquo;re building XML, you&rsquo;re going to need some custom tags. <strong>jquery.builder</strong> can be set up to build any tag that isn&rsquo;t a reserved word. Just pass your tag name to the <code>build</code> method and it will be available on any new builders.
+<div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #CC3300">&#39;custom&#39;</span> );
+
+$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( )
+{
+  <span style="color: #006699; font-weight: bold">this</span>.custom( <span style="color: #CC3300">&#39;sweet&#39;</span> );
+} );
+
+$( <span style="color: #CC3300">&#39;#context&#39;</span> ).html( ); <span style="color: #0099FF; font-style: italic">// =&gt; &lt;custom&gt;sweet&lt;/custom&gt;</span>
+</pre></div>
+</p>
+
+<p>If at any point you need to reset the tag list to the defaults, just pass <em>false</em> to the <code>build</code> method.</p>
+
+<p>Right now, custom tags are shared between all builder instances regardless of their context node.</p>
+
+<h2 id="expressions-syntax:5c3045aa838b92fa2843399a7c7ab350">Expressions Syntax</h2>
+
+<p>Expressions is the easiest way to create nested elements. Using it you don&rsquo;t need to specify a function to every nested object. You can also mix expressions style with the standard builder style.</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( )
+{
+  <span style="color: #006699; font-weight: bold">this</span>( <span style="color: #CC3300">&#39;body div ul&#39;</span>, <span style="color: #006699; font-weight: bold">function</span> ( )
+  {
+    <span style="color: #006699; font-weight: bold">this</span>( <span style="color: #CC3300">&#39;li&#39;</span>, <span style="color: #006699; font-weight: bold">function</span> ( )
+    {
+      <span style="color: #006699; font-weight: bold">this</span>.a( <span style="color: #006699; font-weight: bold">function</span> ( ) { <span style="color: #006699; font-weight: bold">this</span>.text( <span style="color: #CC3300">&#39;Hello World&#39;</span> ); }, { <span style="color: #006699; font-weight: bold">class</span><span style="color: #555555">:</span> <span style="color: #CC3300">&#39;text&#39;</span> } );
+    } );
+  } );
+} );
+
+$( <span style="color: #CC3300">&#39;#context&#39;</span> ).html( ); <span style="color: #0099FF; font-style: italic">// &lt;body&gt;&lt;div&gt;&lt;ul&gt;&lt;li&gt;&lt;a&gt;Hello World&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;&lt;/div&gt;&lt;/body&gt;</span>
+</pre></div>
+</p>
+
+<p>If the tag name is omitted but a class or id is present it will infer a <code>div</code> element, for example:</p>
+
+<p><div class="highlight" style="background: #f0f3f3"><pre style="line-height: 125%">$( <span style="color: #CC3300">&#39;#context&#39;</span> ).build( <span style="color: #006699; font-weight: bold">function</span>( )
+{
+  <span style="color: #006699; font-weight: bold">this</span>( <span style="color: #CC3300">&#39;.foo&#39;</span>, <span style="color: #CC3300">&#39;Hello, Foo!!!&#39;</span> );
+} );
+
+$( <span style="color: #CC3300">&#39;#context&#39;</span> ).html( ); <span style="color: #0099FF; font-style: italic">// &lt;div&gt;Hello, Foo!!!&lt;/div&gt;</span>
+</pre></div>
+</p>
+
+<p>The source code and documentation is available: on the <a href="https://github.com/jeremyruppel/jquery.builder" target="_blank">Github page</a>. Any question or suggestion are welcome.</p>
+
+                </section>
+            </article>
+            <footer id="post-meta" class="clearfix">
+                <a href="https://twitter.com/poiati">
+                        <img class="avatar" src="http://poiati.github.io/images/avatar.png">
+                        <div>
+                            <span class="dark">Paulo Poiati</span>
+                            <span></span>
+                        </div>
+                    </a>
+                <section id="sharing">
+                    <a class="twitter" href="https://twitter.com/intent/tweet?text=http%3a%2f%2fpoiati.github.io%2f2012%2f02%2f16%2fjquery-builder-introduction%2f - jQuery%20Builder%3a%20Introduction by @poiati"><span class="icon-twitter"> Tweet</span></a>
+
+<a class="facebook" href="#" onclick="
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+encodeURIComponent(location.href),
+      'facebook-share-dialog',
+      'width=626,height=436');
+    return false;"><span class="icon-facebook-rect"> Share</span>
+</a>
+
+                </section>
+            </footer>
+
+            <div id="disqus_thread"></div>
+<script type="text/javascript">
+    var disqus_shortname = 'poiati';
+    var disqus_identifier = 'http:\/\/poiati.github.io\/2012\/02\/16\/jquery-builder-introduction\/';
+    var disqus_title = 'jQuery Builder: Introduction';
+    var disqus_url = 'http:\/\/poiati.github.io\/2012\/02\/16\/jquery-builder-introduction\/';
+
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+
+            <ul id="post-list" class="archive readmore">
+    <h3>Read more</h3>
+    
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2015/03/01/how-do-i-configure-environment-variables-in-ansible/">How do I Configure Environment Variables in Ansible<aside class="dates">Mar 1</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2014/05/27/copying-content-from-vim-to-mac-os-clipboard/">Copying content from vim to Mac OS clipboard<aside class="dates">May 27</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/10/31/django-outbox-released/">Django Outbox Released<aside class="dates">Oct 31</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/08/25/running-cron-in-elastic-beanstalk-auto-scaling-environment/">Running Cron In Elastic Beanstalk Auto-Scaling Environment<aside class="dates">Aug 25</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/02/22/testing-flash-messages-in-flask/">Flask flash messages testing<aside class="dates">Feb 22</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2013/01/28/installing-rmagick-in-mac-os-x-mountain-lion-with-homebrew/">Installing RMagick in Mac OS X Mountain Lion / Maverick with Homebrew<aside class="dates">Jan 28</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/06/17/browsing-between-most-recent-buffers-in-vim/">Browsing between most recent buffers in VIM<aside class="dates">Jun 17</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/">A not well known and often over looked css property: box-sizing<aside class="dates">May 12</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/16/jquery-builder-introduction/">jQuery Builder: Introduction<aside class="dates">Feb 16</aside></a>
+        </li>
+        
+   
+    
+        
+        <li>
+            <a href="http://poiati.github.io/2012/02/07/installing-vimrepress-in-macvim-osx-lion/">Installing VimRepress in MacVim (OSX Lion)<aside class="dates">Feb 7</aside></a>
+        </li>
+        
+   
+</ul>
+            <footer id="footer">
+    
+        
+<div id="social">
+    
+    <a class="symbol" href="https://www.github.com/poiati">
+        github
+    </a>
+    
+    <a class="symbol" href="https://www.twitter.com/poiati">
+        twitterbird
+    </a>
+    
+</div>
+
+    
+    <p class="small">
+    
+        © Copyright 2015 Paulo Poiati
+    
+    </p>
+</footer>
+
+        </section>
+
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+<script src="http://poiati.github.io/js/main.js"></script>
+<script src="http://poiati.github.io/js/highlight.js"></script>
+<script>hljs.initHighlightingOnLoad();</script>
+
+
+    </body>
+</html>

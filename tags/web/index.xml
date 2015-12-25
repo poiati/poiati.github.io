@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Web on Paulo Poiati | Full Stack Web Developer</title>
+    <link>http://poiati.github.io/tags/web/</link>
+    <description>Recent content in Web on Paulo Poiati | Full Stack Web Developer</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sat, 12 May 2012 00:00:00 +0000</lastBuildDate>
+    <atom:link href="http://poiati.github.io/tags/web/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>A not well known and often over looked css property: box-sizing</title>
+      <link>http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</link>
+      <pubDate>Sat, 12 May 2012 00:00:00 +0000</pubDate>
+      
+      <guid>http://poiati.github.io/2012/05/12/a-not-well-known-and-often-over-looked-css-property-box-sizing/</guid>
+      <description>&lt;p&gt;The &lt;code&gt;box-sizing&lt;/code&gt; (introduced in CSS3) is one of the forgotten properties, no one talks about it but can be really useful in some situations.&lt;/p&gt;
+
+&lt;p&gt;What it does? In the &lt;a href=&#34;https://developer.mozilla.org/En/CSS/Box-sizing&#34;&gt;Mozilla words&lt;/a&gt;:&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;&amp;ldquo;The box-sizing CSS property is used to alter the default CSS box model used to calculate widths and heights of elements. It is possible to use this property to emulate the behavior of browsers that do not correctly support the CSS box model specification.&amp;rdquo;&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;There are two possible values for this property:&lt;/p&gt;
+
+&lt;ul&gt;
+&lt;li&gt;content-box (default)&lt;/li&gt;
+&lt;li&gt;boder-box&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;p&gt;The &lt;code&gt;content-box&lt;/code&gt; is the default value, when it is set, the &lt;code&gt;padding&lt;/code&gt; and &lt;code&gt;border&lt;/code&gt; properties are put outside the bounds of your element, for example:&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;  &lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;div&lt;/span&gt;&lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;.box&lt;/span&gt; { &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;width&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;200px&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;height&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;200px&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;border&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;15px&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;solid&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;black&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;padding&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;10px&lt;/span&gt;; }
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;div style=&#34;text-align: center; font-size: 18px; width: 200px; 
+            height: 200px; border: 15px solid black; padding: 10px; 
+            background: #AAA; margin: 0 auto;&#34;&gt;
+  &lt;span&gt;250px&lt;/span&gt;
+&lt;/div&gt;
+&lt;br&gt;
+&lt;br&gt;&lt;/p&gt;
+
+&lt;p&gt;The above box total width and height will be:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;200 + (2 * 15) + (2 * 10) = 250px
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Now, if we change to border-box:&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #330099; font-weight: bold&#34;&gt;div&lt;/span&gt;&lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;.box&lt;/span&gt; { 
+  box&lt;span style=&#34;color: #555555&#34;&gt;-&lt;/span&gt;sizing&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;border&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;-&lt;/span&gt;box; 
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;width&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;200px&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;height&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;200px&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;border&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;15px&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;solid&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;black&lt;/span&gt;; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;padding&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;10px&lt;/span&gt;; 
+}
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;&lt;br&gt;
+&lt;br&gt;
+&lt;div style=&#34;text-align: center; font-size: 18px; box-sizing: border-box; width: 200px; height: 200px; border: 15px solid black; padding: 10px; background: #AAA; margin: 10px auto;&#34;&gt;
+  &lt;span&gt;200px&lt;/span&gt;
+&lt;/div&gt;
+&lt;br&gt;
+&lt;br&gt;&lt;/p&gt;
+
+&lt;p&gt;The box size stay unchanged. By the way, this behavior in the box model is analogous to Internet Explorer when the document is in Quirks mode.&lt;/p&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>
