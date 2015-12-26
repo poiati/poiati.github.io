@@ -303,7 +303,7 @@ pre	{
 	white-space:pre-wrap;
 	/*border: 1px solid #ddd;*/
 	padding:20px;
-	background-color:#fdfdfd;
+	background-color: rgba(255, 255, 255, 0.45);
 	/*font-size:14px;*/
 	overflow:auto;
 	border-radius: 3px;
