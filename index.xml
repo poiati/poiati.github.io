@@ -21,6 +21,10 @@
 internal clock of the system. There are several obvious ways to do that and
 I will try to point out the pros and cons of each one.&lt;/p&gt;
 
+&lt;blockquote&gt;
+&lt;p&gt;Although I&amp;rsquo;m saying  Django most of those ideas can be applied to any python application.&lt;/p&gt;
+&lt;/blockquote&gt;
+
 &lt;h2 id=&#34;receive-the-datetime-object-as-an-optional-argument:7de89e27602e9e749027d65dc13db659&#34;&gt;Receive the datetime object as an optional argument&lt;/h2&gt;
 
 &lt;p&gt;This is the simplest way. The idea here is to pass a function as argument that
