@@ -6,8 +6,139 @@
     <description>Recent content in Posts on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sun, 01 Mar 2015 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 26 Dec 2015 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://blog.paulopoiati.com/post/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Django Testing: Dealing with datetimes</title>
+      <link>http://blog.paulopoiati.com/2015/12/26/django-testing-dealing-with-datetimes/</link>
+      <pubDate>Sat, 26 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.paulopoiati.com/2015/12/26/django-testing-dealing-with-datetimes/</guid>
+      <description>
+
+&lt;p&gt;While writing automated tests for &lt;a href=&#34;https://www.djangoproject.com/&#34;&gt;Django&lt;/a&gt; you soon or later will need to control the
+internal clock of the system. There are several obvious ways to do that and
+I will try to point out the pros and cons of each one.&lt;/p&gt;
+
+&lt;h2 id=&#34;receive-the-datetime-object-as-an-optional-argument:7de89e27602e9e749027d65dc13db659&#34;&gt;Receive the datetime object as an optional argument&lt;/h2&gt;
+
+&lt;p&gt;This is the simplest way. The idea here is to pass a function as argument that
+returns the current datetime, e.g.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;is_expired&lt;/code&gt; implementation must get the datetime calling the function &lt;code&gt;now&lt;/code&gt;. Defaults to
+&lt;code&gt;django.utils.timezone#now&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Promotion&lt;/span&gt;(models&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;Model):
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;is_expired&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;, now&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;timezone&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now):
+    system_datetime &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; now()
+    &lt;span style=&#34;color: #555555&#34;&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;test_is_expired&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  now &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;lambda&lt;/span&gt;: datetime(&lt;span style=&#34;color: #FF6600&#34;&gt;2020&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;)
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;promotion&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;is_expired(now&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;now) &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3 id=&#34;pros:7de89e27602e9e749027d65dc13db659&#34;&gt;Pros&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Simplicity.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;cons:7de89e27602e9e749027d65dc13db659&#34;&gt;Cons&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Dirty and confusing interfaces.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;mock-the-standard-datetime-library:7de89e27602e9e749027d65dc13db659&#34;&gt;Mock the standard datetime library&lt;/h2&gt;
+
+&lt;p&gt;Using the &lt;a href=&#34;https://docs.python.org/3/library/unittest.mock.html&#34;&gt;mock&lt;/a&gt; library to do that, e.g.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;@patch&lt;/span&gt;(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;yourpackage.datetime&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;test_is_expired&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;, datetime_mock):
+  datetime_mock&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;return_value &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; datetime(&lt;span style=&#34;color: #FF6600&#34;&gt;2020&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;)
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;promotion&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;is_expired() &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3 id=&#34;pros-1:7de89e27602e9e749027d65dc13db659&#34;&gt;Pros&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fits very well with the python development philosophy;&lt;/li&gt;
+&lt;li&gt;Moderate complexity.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;cons-1:7de89e27602e9e749027d65dc13db659&#34;&gt;Cons&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Troublesome if the datetime needs to be mocked system-wide, e.g. in the development server.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;service-interface:7de89e27602e9e749027d65dc13db659&#34;&gt;Service Interface&lt;/h2&gt;
+
+&lt;p&gt;We can call this the most &lt;em&gt;object oriented&lt;/em&gt; solution to the problem.
+Create a service interface that provides a method to retrieve the time,
+and then mock it as needed. e.g.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;TimeService&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;object&lt;/span&gt;):
+  
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;now&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; timezone&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now()
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;is_expired&lt;/code&gt; implementation must get the datetime through &lt;code&gt;TimeService#now&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;PromotionService&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;object&lt;/span&gt;):
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;__init__&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;, timeservice):
+    &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;_timeservice &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; timeservice
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;is_expired&lt;/span&gt;(promotion):
+    system_datetime &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;_timeservice&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now()
+    &lt;span style=&#34;color: #555555&#34;&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The example is using the &lt;code&gt;create_autospec&lt;/code&gt; function from &lt;a href=&#34;https://docs.python.org/3/library/unittest.mock.html#unittest.mock.create_autospec&#34;&gt;python standard library&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;test_is_expired&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  timeservice &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; create_autospec(TimeService)
+  timeservice&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;return_value &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; datetime(&lt;span style=&#34;color: #FF6600&#34;&gt;2020&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;)
+
+  service &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; PromotionService(timeservice)
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; service&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;is_expired(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;promotion) &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;h3 id=&#34;pros-2:7de89e27602e9e749027d65dc13db659&#34;&gt;Pros&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;High cohesion, low coupling;&lt;/li&gt;
+&lt;li&gt;Clear interfaces, dependencies are explicitly set in the constructor;&lt;/li&gt;
+&lt;li&gt;Easy to replace the &lt;code&gt;TimeService&lt;/code&gt; with a fake one and apply it system-wide.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;cons-2:7de89e27602e9e749027d65dc13db659&#34;&gt;Cons&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Complex and verbose;&lt;/li&gt;
+&lt;li&gt;Doesn&amp;rsquo;t fits well with the python development philosophy.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;conclusion:7de89e27602e9e749027d65dc13db659&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Neither of the solutions is perfect and thus people generally choose between them based on their background and programming style. Do you know another solution? Share with us in the comments!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>How do I Configure Environment Variables in Ansible</title>
@@ -954,153 +1085,6 @@ Person personFromMongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;
 db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;greetings&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;insert&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;hello:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;world&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 &lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>GMongo 0.5 Released</title>
-      <link>http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/</link>
-      <pubDate>Sun, 20 Jun 2010 00:00:00 +0000</pubDate>
-      
-      <guid>http://blog.paulopoiati.com/2010/06/20/gmongo-0-5-released/</guid>
-      <description>&lt;blockquote&gt;
-&lt;p&gt;&lt;strong&gt;UPDATE&lt;/strong&gt; GMongo is in constantly development, for more details check &lt;a href=&#39;https://github.com/poiati/gmongo&#39;&gt;&lt;a href=&#34;https://github.com/poiati/gmongo&#34;&gt;https://github.com/poiati/gmongo&lt;/a&gt;&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;GMongo is an alternative to de default Java driver for &lt;a href=&#34;http://www.mongodb.org/&#34;&gt;Mongodb&lt;/a&gt;. It&amp;rsquo;s use an easy and less verbose syntax, the grammar is very close to the official mongo shell cliente (javascript).&lt;/p&gt;
-
-&lt;p&gt;It&amp;rsquo;s just a wrapper around the Java driver. So, every single method of the the official driver is available here too.&lt;/p&gt;
-
-&lt;p&gt;The main class is the com.gmongo.GMongo. It has the same API of the com.mongodb.Mongo but it&amp;rsquo;s not a subclass. Instead, the methods calls are delegated. Despite GMongo, all other classes are the same from the Java driver.&lt;/p&gt;
-
-&lt;p&gt;To be more practical, here are some examples:&lt;/p&gt;
-
-&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// To download GMongo on the fly and put it at classpath&lt;/span&gt;
-&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;group&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; module&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; version&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.gmongo.GMongo&lt;/span&gt;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Instantiate a com.gmongo.GMongo object instead of com.mongodb.Mongo&lt;/span&gt;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// The same constructors and methods are available here&lt;/span&gt;
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; mongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; GMongo&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;127.0.0.1&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;27017&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Get a db reference in the old fashion way&lt;/span&gt;
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; db &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; mongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;getDB&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;gmongo&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Collections can be accessed as a db property (like the javascript API)&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;myCollection&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;instanceof&lt;/span&gt; com&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mongodb&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;DBCollection&lt;/span&gt;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// They also can be accessed with array notation &lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;my.collection&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;instanceof&lt;/span&gt; com&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mongodb&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;DBCollection&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Insert a document&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;insert&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Groovy&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;])&lt;/span&gt;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// A less verbose way to do it&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;insert&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Ruby&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Yet another way&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Python&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Insert a list of documents&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Javascript&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;],&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Ioke&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]]&lt;/span&gt;
-
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; statics &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Java&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;C&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;VB&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
-
-statics&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;each&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
-	db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; it&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;static&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
-&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Finding the first document&lt;/span&gt;
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; lang &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; lang&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;name&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Groovy&amp;#39;&lt;/span&gt;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Set a new property&lt;/span&gt;
-lang&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;site&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;http://groovy.codehaus.org/&amp;#39;&lt;/span&gt;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Save the new version&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;save&lt;/span&gt; lang
-
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Groovy&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;).&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;site&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;http://groovy.codehaus.org/&amp;#39;&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Counting the number of documents in the collection&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;find&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;static&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;).&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;3&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Another way to count&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;2&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Updating a document using the &amp;#39;$set&amp;#39; operator&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;update&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Python&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;],&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;$set&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;paradigms:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;object-oriented&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;functional&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;imperative&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]]])&lt;/span&gt;
-
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;3&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Python&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;).&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;paradigms&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;size&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Using upsert&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;update&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Haskel&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;],&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;$set&lt;span style=&#34;color: #555555&#34;&gt;:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;paradigms:&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;functional&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]]],&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;true&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;findOne&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Haskel&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Removing some documents&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;remove&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;type:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;prototyped&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// Removing all documents&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;remove&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;([:])&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;0&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// To ensure complete consistency in a session use DB#inRequest&lt;/span&gt;
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// It is analogous to user DB#requestStarted and DB#requestDone&lt;/span&gt;
-db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;inRequest&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt;
-	db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;insert&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Objective-C&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-	&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;1&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;languages&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;name:&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;Objective-C&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-
-
-&lt;p&gt;And a simple MapReduce:&lt;/p&gt;
-
-&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// To download GMongo on the fly and put it at classpath&lt;/span&gt;
-&lt;span style=&#34;color: #9999FF&#34;&gt;@Grab&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;group&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;com.gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; module&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;gmongo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; version&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;1.0&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;com.gmongo.GMongo&lt;/span&gt;
-
-&lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// There is some bug using the [Random] word into codesnipt plugin&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;import&lt;/span&gt; &lt;span style=&#34;color: #00CCFF; font-weight: bold&#34;&gt;java.util.Random&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;as&lt;/span&gt; Rand
-
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; mongo &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; GMongo&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;127.0.0.1&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;27017&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; db &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; mongo&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;getDB&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;gmongo&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; words &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;foo&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;bar&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt; &lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;baz&amp;#39;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;]&lt;/span&gt;
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; rand  &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;new&lt;/span&gt; Rand&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt;		
-
-&lt;span style=&#34;color: #FF6600&#34;&gt;1000&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;times&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;{&lt;/span&gt; 
-	db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;words&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;word:&lt;/span&gt; words&lt;span style=&#34;color: #555555&#34;&gt;[&lt;/span&gt;rand&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;nextInt&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;&lt;span style=&#34;color: #FF6600&#34;&gt;3&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;)]]&lt;/span&gt;
-&lt;span style=&#34;color: #555555&#34;&gt;}&lt;/span&gt;
-
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;words&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;1000&lt;/span&gt;
-
-&lt;span style=&#34;color: #007788; font-weight: bold&#34;&gt;def&lt;/span&gt; result &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;words&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mapReduce&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;(&lt;/span&gt;
-	&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;	function map() {&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;		emit(this.word, {count: 1})&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;	}&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;	&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt;
-	&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;	function reduce(key, values) {&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;		var count = 0&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;		for (var i = 0; i &amp;lt; values.length; i++)&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;			count += values[i].count&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;		return {count: count}&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;	}&lt;/span&gt;
-&lt;span style=&#34;color: #CC3300&#34;&gt;	&amp;quot;&amp;quot;&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt;
-	&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;quot;mrresult&amp;quot;&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;,&lt;/span&gt;
-	&lt;span style=&#34;color: #555555&#34;&gt;[:]&lt;/span&gt; &lt;span style=&#34;color: #0099FF; font-style: italic&#34;&gt;// No Query&lt;/span&gt;
-&lt;span style=&#34;color: #555555&#34;&gt;)&lt;/span&gt;
-
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mrresult&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;3&lt;/span&gt;
-&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; db&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;mrresult&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;find&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()*.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;value&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;*.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;count&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;&lt;span style=&#34;color: #330099&#34;&gt;sum&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;()&lt;/span&gt; &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #FF6600&#34;&gt;1000&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;
-&lt;/p&gt;
-
-&lt;p&gt;It&amp;rsquo;s a stable version and still a work in progress. The only dependency is the mongo Java driver version 2.0 and, of course, Groovy. It&amp;rsquo;s tested under Groovy 1.7.2 and 1.7.3. It&amp;rsquo;s opensource and hosted at &lt;a href=&#34;http://github.com/poiati/gmongo&#34;&gt;http://github.com/poiati/gmongo&lt;/a&gt;.&lt;/p&gt;
-
-&lt;blockquote&gt;
-&lt;p&gt;The binaries can be found at &lt;a href=&#34;http://repo1.maven.org/maven2/com/gmongo/gmongo/&#34;&gt;Maven Central&lt;/a&gt;.
-&lt;a href=&#34;http://blog.paulopoiati.com/2010/07/03/gmongo-available-at-maven-central/&#34;&gt;Click here for more details&lt;/a&gt;.&lt;/p&gt;
-&lt;/blockquote&gt;
-
-&lt;p&gt;Any bug, suggestion or issue please contact me.&lt;/p&gt;
 </description>
     </item>
     

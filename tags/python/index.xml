@@ -6,8 +6,139 @@
     <description>Recent content in Python on Paulo Poiati | Full Stack Web Developer</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 31 Oct 2013 00:00:00 +0000</lastBuildDate>
+    <lastBuildDate>Sat, 26 Dec 2015 00:00:00 +0000</lastBuildDate>
     <atom:link href="http://blog.paulopoiati.com/tags/python/index.xml" rel="self" type="application/rss+xml" />
+    
+    <item>
+      <title>Django Testing: Dealing with datetimes</title>
+      <link>http://blog.paulopoiati.com/2015/12/26/django-testing-dealing-with-datetimes/</link>
+      <pubDate>Sat, 26 Dec 2015 00:00:00 +0000</pubDate>
+      
+      <guid>http://blog.paulopoiati.com/2015/12/26/django-testing-dealing-with-datetimes/</guid>
+      <description>
+
+&lt;p&gt;While writing automated tests for &lt;a href=&#34;https://www.djangoproject.com/&#34;&gt;Django&lt;/a&gt; you soon or later will need to control the
+internal clock of the system. There are several obvious ways to do that and
+I will try to point out the pros and cons of each one.&lt;/p&gt;
+
+&lt;h2 id=&#34;receive-the-datetime-object-as-an-optional-argument:7de89e27602e9e749027d65dc13db659&#34;&gt;Receive the datetime object as an optional argument&lt;/h2&gt;
+
+&lt;p&gt;This is the simplest way. The idea here is to pass a function as argument that
+returns the current datetime, e.g.&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;is_expired&lt;/code&gt; implementation must get the datetime calling the function &lt;code&gt;now&lt;/code&gt;. Defaults to
+&lt;code&gt;django.utils.timezone#now&lt;/code&gt;.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;Promotion&lt;/span&gt;(models&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;Model):
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;is_expired&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;, now&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;timezone&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now):
+    system_datetime &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; now()
+    &lt;span style=&#34;color: #555555&#34;&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;test_is_expired&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  now &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;lambda&lt;/span&gt;: datetime(&lt;span style=&#34;color: #FF6600&#34;&gt;2020&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;)
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;promotion&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;is_expired(now&lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt;now) &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3 id=&#34;pros:7de89e27602e9e749027d65dc13db659&#34;&gt;Pros&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Simplicity.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;cons:7de89e27602e9e749027d65dc13db659&#34;&gt;Cons&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Dirty and confusing interfaces.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;mock-the-standard-datetime-library:7de89e27602e9e749027d65dc13db659&#34;&gt;Mock the standard datetime library&lt;/h2&gt;
+
+&lt;p&gt;Using the &lt;a href=&#34;https://docs.python.org/3/library/unittest.mock.html&#34;&gt;mock&lt;/a&gt; library to do that, e.g.&lt;/p&gt;
+
+&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #9999FF&#34;&gt;@patch&lt;/span&gt;(&lt;span style=&#34;color: #CC3300&#34;&gt;&amp;#39;yourpackage.datetime&amp;#39;&lt;/span&gt;)
+&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;test_is_expired&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;, datetime_mock):
+  datetime_mock&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;return_value &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; datetime(&lt;span style=&#34;color: #FF6600&#34;&gt;2020&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;)
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;promotion&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;is_expired() &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3 id=&#34;pros-1:7de89e27602e9e749027d65dc13db659&#34;&gt;Pros&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Fits very well with the python development philosophy;&lt;/li&gt;
+&lt;li&gt;Moderate complexity.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;cons-1:7de89e27602e9e749027d65dc13db659&#34;&gt;Cons&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Troublesome if the datetime needs to be mocked system-wide, e.g. in the development server.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;service-interface:7de89e27602e9e749027d65dc13db659&#34;&gt;Service Interface&lt;/h2&gt;
+
+&lt;p&gt;We can call this the most &lt;em&gt;object oriented&lt;/em&gt; solution to the problem.
+Create a service interface that provides a method to retrieve the time,
+and then mock it as needed. e.g.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;TimeService&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;object&lt;/span&gt;):
+  
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;now&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+    &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;return&lt;/span&gt; timezone&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now()
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The &lt;code&gt;is_expired&lt;/code&gt; implementation must get the datetime through &lt;code&gt;TimeService#now&lt;/code&gt;.&lt;/p&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;class&lt;/span&gt; &lt;span style=&#34;color: #00AA88; font-weight: bold&#34;&gt;PromotionService&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;object&lt;/span&gt;):
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;__init__&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;, timeservice):
+    &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;_timeservice &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; timeservice
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;is_expired&lt;/span&gt;(promotion):
+    system_datetime &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;_timeservice&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now()
+    &lt;span style=&#34;color: #555555&#34;&gt;...&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;blockquote&gt;
+&lt;p&gt;The example is using the &lt;code&gt;create_autospec&lt;/code&gt; function from &lt;a href=&#34;https://docs.python.org/3/library/unittest.mock.html#unittest.mock.create_autospec&#34;&gt;python standard library&lt;/a&gt;.&lt;/p&gt;
+&lt;/blockquote&gt;
+
+&lt;p&gt;&lt;div class=&#34;highlight&#34; style=&#34;background: #f0f3f3&#34;&gt;&lt;pre style=&#34;line-height: 125%&#34;&gt;&lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;def&lt;/span&gt; &lt;span style=&#34;color: #CC00FF&#34;&gt;test_is_expired&lt;/span&gt;(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;):
+  timeservice &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; create_autospec(TimeService)
+  timeservice&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;now&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;return_value &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; datetime(&lt;span style=&#34;color: #FF6600&#34;&gt;2020&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;, &lt;span style=&#34;color: #FF6600&#34;&gt;10&lt;/span&gt;)
+
+  service &lt;span style=&#34;color: #555555&#34;&gt;=&lt;/span&gt; PromotionService(timeservice)
+
+  &lt;span style=&#34;color: #006699; font-weight: bold&#34;&gt;assert&lt;/span&gt; service&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;is_expired(&lt;span style=&#34;color: #336666&#34;&gt;self&lt;/span&gt;&lt;span style=&#34;color: #555555&#34;&gt;.&lt;/span&gt;promotion) &lt;span style=&#34;color: #555555&#34;&gt;==&lt;/span&gt; &lt;span style=&#34;color: #336666&#34;&gt;True&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
+&lt;/p&gt;
+
+&lt;h3 id=&#34;pros-2:7de89e27602e9e749027d65dc13db659&#34;&gt;Pros&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;High cohesion, low coupling;&lt;/li&gt;
+&lt;li&gt;Clear interfaces, dependencies are explicitly set in the constructor;&lt;/li&gt;
+&lt;li&gt;Easy to replace the &lt;code&gt;TimeService&lt;/code&gt; with a fake one and apply it system-wide.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h3 id=&#34;cons-2:7de89e27602e9e749027d65dc13db659&#34;&gt;Cons&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Complex and verbose;&lt;/li&gt;
+&lt;li&gt;Doesn&amp;rsquo;t fits well with the python development philosophy.&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;h2 id=&#34;conclusion:7de89e27602e9e749027d65dc13db659&#34;&gt;Conclusion&lt;/h2&gt;
+
+&lt;p&gt;Neither of the solutions is perfect and thus people generally choose between them based on their background and programming style. Do you know another solution? Share with us in the comments!&lt;/p&gt;
+</description>
+    </item>
     
     <item>
       <title>Django Outbox Released</title>

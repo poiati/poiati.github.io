@@ -296,7 +296,7 @@ hr {
 	background: #eee;
 }
 
-span.code { font-family:Menlo, Monaco, Courier; background-color:#EEE; font-size:14px; }
+span.code, code { font-family:Menlo, Monaco, Courier; background-color: #f9f9f9; font-size: 12px; padding: 2px; border: 1px solid #eee; color: #777; }
 
 pre	{
 	font-family:Menlo, Monaco, Courier;
